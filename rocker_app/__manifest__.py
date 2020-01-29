@@ -4,7 +4,7 @@
  'author': 'Antti Kärki',
  'depends': ['base','web'],
  'license': 'AGPL-3',
- 'category': 'Reporting',
+ 'category': 'Extra Tools',
  'version': '12.0.1.0.0',
  'data': [
     'views/database_view.xml',
