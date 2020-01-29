@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<odoo>
+    <record id="view_form_rocker_excel" model="ir.ui.view">
+            <field name="name">excel.form</field>
+            <field name="model">rocker.excel</field>
+            <field name="arch" type="xml">
+              <form string="Excel Report file" save="false" create="false" discard="false" edit="false">
+                    <group>
+                        <field name="name" readonly="1"/>
+                        <field name="date_executed" readonly="1"/>
+                        <field name="file_name" readonly="1"/>
+                        <field name="excel_file" readonly="1" filename="file_name" string="Excel size"/>
+                    </group>
+                </form>
+            </field>
+    </record>
+    
+    <record id="action_excel_form" model="ir.actions.act_window">
+            <field name="name">excel.action</field>
+            <field name="view_id" ref="view_form_rocker_excel"/>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="res_model">rocker.excel</field>
+            <field name="target">inline</field>
+    </record>
+
+    <record id="view_tree_rocker_excel" model="ir.ui.view">
+      <field name="name">excel.tree</field>
+      <field name="model">rocker.excel</field>
+      <field name="arch" type="xml">
+        <tree>
+         <field name="name" readonly="1"/>
+         <field name="date_executed" readonly="1"/>
+         <field name="file_name" readonly="1"/>
+         <field name="excel_file" readonly="1" filename="file_name"/>
+        </tree>
+      </field>
+    </record>
+
+</odoo>

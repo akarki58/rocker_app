@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_report_user,Rocker Report User Access,model_rocker_report,rocker_group_user,1,0,0,0
+access_excel_user,Rocker Excel User Access,model_rocker_excel,rocker_group_user,1,0,0,0
+access_database_user,Rocker Database User Access,model_rocker_database,rocker_group_user,1,0,0,0
+
+access_report_manager,Rocker Report Manager Access,model_rocker_report,rocker_group_manager,1,1,1,1
+access_database_manager,Rocker Database Manager Access,model_rocker_database,rocker_group_manager,1,1,1,1
+access_excel_manager,Rocker Excel Manager Access,model_rocker_excel,rocker_group_manager,1,1,1,1
