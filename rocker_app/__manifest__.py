@@ -1,6 +1,6 @@
 {'name': 'Rocker Reporting Application',
  'summary': 'Collect data from various datasources to Excel, Create report and present business graphs with Power Pivot',
- 'description': 'Collect data to single Excel report from various data sources, Use Excel templates to present business graphs. Combine data with Excel Power Pivot (or just Pivot). Get data from Odoo & external PostgreSQL, SQLServer, MySQL, MariaDB, ODBC or Oracle databases.',
+ 'description': 'Collect data to single Excel report from various data sources, Use Excel templates to present business graphs. Combine data with Excel Power Pivot (Excel Pivot). Get data from Odoo & external PostgreSQL, SQLServer, MySQL, MariaDB, ODBC or Oracle databases.',
  'author': 'Antti Kärki',
  'depends': ['base','web'],
  'license': 'AGPL-3',
