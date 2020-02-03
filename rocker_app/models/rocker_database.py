@@ -43,7 +43,7 @@ class rocker_database(models.Model):
     user = fields.Char('User', required=True, default='openpg')
     password = fields.Char('Password', required=True, default='openpgpwd')
 
-    @api.multi
+    # @api.multi
     def testconnection(self):
         _datasource = self.name
         _driver = self.driver

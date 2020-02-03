@@ -8,8 +8,7 @@
       name="Rocker Reports"
       res_model="rocker.report"
       view_mode="tree,form"
-      view_id="view_tree_report"
-      context="{'search_default_type_group':1}"
+       context="{'search_default_type_group':1}"
     />
 
     <act_window id="action_rocker_excel"
@@ -23,17 +22,10 @@
       res_model="rocker.database"
       view_mode="tree,form"
     />
-    <act_window id="action_rocker_about"
-      name="Rocker About"
-      res_model="rocker.about"
-      view_mode="form"
-      target = "inline"
-    />
 
     <record id="rocker_executor_act" model="ir.actions.act_window">
         <field name="name">Executor</field>
         <field name="res_model">ir.cron</field>
-        <field name="view_type">form</field>
         <field name="view_mode">form</field>
         <field name="res_id" ref="rocker_app.rocker_cron_report_executor"/>
         <field name="view_id" ref="rocker_executor_view_form"/>
@@ -54,32 +46,30 @@
               action="action_rocker_database"
               parent="rocker_menu"
     />
+
     <menuitem id="menu_rocker_executor"
               name="Executor"
               action="rocker_executor_act"
               parent="rocker_menu"
     />
+
     <menuitem id="menu_rocker_help"
           name="Help"
           parent="rocker_menu"
     />
+
    <record id="action_rocker_about_prog" model="ir.actions.server">
             <field name="name">Show About</field>
             <field name="model_id" ref="rocker_app.model_rocker_report"/>
-            <field name="binding_model_id" ref="rocker_app.model_rocker_report"/>
-            <field name="condition">True</field>
-            <field name="type">ir.actions.server</field>
             <field name="state">code</field>
-            <field name="code">action = model.show_about()</field>
+            <field name="code">action = model._show_about()</field>
     </record>
-   <record id="action_test_excel" model="ir.actions.server">
-            <field name="name">Test Excel</field>
-            <field name="model_id" ref="rocker_app.model_rocker_report"/>
-            <field name="binding_model_id" ref="rocker_app.model_rocker_report"/>
-            <field name="condition">True</field>
-            <field name="type">ir.actions.server</field>
-            <field name="state">code</field>
-            <field name="code">action = model.testexcel()</field>
+
+    <record id="action_test_excel" model="ir.actions.server">
+        <field name="name">Test Excel</field>
+        <field name="model_id" ref="rocker_app.model_rocker_report"/>
+        <field name="state">code</field>
+        <field name="code">action = model._testexcel()</field>
     </record>
 
     <menuitem id="menu_rocker_help1"
@@ -87,9 +77,11 @@
         action="action_rocker_about_prog"
         parent="menu_rocker_help"
     />
+
     <menuitem id="menu_rocker_testexcel"
         name="Test Excel creation"
         action="action_test_excel"
         parent="menu_rocker_help"
     />
+
 </odoo>

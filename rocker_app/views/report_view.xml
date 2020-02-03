@@ -10,14 +10,14 @@
           <button type="object" string="Execute" name="export_xls" confirm="Execute report immediately?"/>
         </header>
         <sheet>
-                <group col="3">
-                    <label for="name" string="Name"></label>
-                        <h1><field name="name" placeholder="New"/></h1>
-                   <div class="oe_button_box" name="button_box" colspan="1">
-                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
-                            <field name="active" widget="boolean_button"/>
-                        </button>
-                    </div>
+            <div class="oe_title">
+            <label class="oe_edit_only" for="name" string="Report Name"/>
+            <h1><field name="name" placeholder="New report"/></h1>
+            </div>
+            <group col="4">
+                     <div class="oe_button_box" name="button_box"/>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                    <field name="active" invisible="1"/>
                  </group>
                 <group col="6">
                     <label for="report_type" string="Report type"></label>
@@ -48,9 +48,7 @@
                     <field name="sheet_name" colspan="2" attrs="{'invisible':[('report_type', '!=', 'single')]}"/>
                     <field name="excel_template"  string="Template Filename" widget="binary" filename="template_name" colspan="4"/>
                     <field name="template_name" invisible="1" />
-                </group>
-                <group col="4">
-                    <field name="excel_report" widget="binary" readonly="1" filename="file_name" colspan="2" attrs="{'invisible':[('excel_report', '=', False)]}" />
+                     <field name="excel_report" widget="binary" readonly="1" filename="file_name" colspan="2" attrs="{'invisible':[('excel_report', '=', False)]}" />
                     <field name="date_executed" readonly="1" colspan="2" attrs="{'invisible':[('excel_report', '=', False)]}"/>
                     <field name="perma_link" readonly="1" colspan="2" widget ="url" text="Latest Excel" attrs="{'invisible':[('perma_link', '=', False) or ('excel_report', '=', False) ]}" />
                     <field name="store_history" readonly="0" colspan="2" />
@@ -102,31 +100,56 @@
     </record>
 
 
-  <record id="view_search_report" model="ir.ui.view">
-    <field name="name">rocker.report.filter</field>
-    <field name="model">rocker.report</field>
-    <field name="view_id" ref="view_tree_report"/>
-    <field name="arch" type="xml">
-    <search string="report_filter">
-           <filter name="filter_inactive"
-                  string="Inactive"
-                  domain="[('active','=',False)]"/>
-           <filter name="filter_active"
-                  string="Active"
-                  domain="[('active','=',True)]"/>
-        <separator/>
-          <filter name="single_reports"
-                  string="Single Reports"
-                  domain="[('report_type','=','single')]"/>
-          <filter name="collection_reports"
-                  string="Collection Reports"
-                  domain="[('report_type','=','collection')]"/>
-        <group expand="0" string="Group By...">
-                <filter name="type_group" string="Group by Report type"
-                    domain="[]" context="{'group_by':'report_type'}" />
-        </group>
-    </search>
-    </field>
-  </record>
+    <record id="view_search_report" model="ir.ui.view">
+      <field name="name">rocker.report.filter</field>
+      <field name="model">rocker.report</field>
+      <field name="arch" type="xml">
+      <search string="report_filter">
+             <filter name="filter_inactive"
+                    string="Inactive"
+                    domain="[('active','=',False)]"/>
+             <filter name="filter_active"
+                    string="Active"
+                    domain="[('active','=',True)]"/>
+          <separator/>
+            <filter name="single_reports"
+                    string="Single Reports"
+                    domain="[('report_type','=','single')]"/>
+            <filter name="collection_reports"
+                    string="Collection Reports"
+                    domain="[('report_type','=','collection')]"/>
+          <group expand="0" string="Group By...">
+                  <filter name="type_group" string="Group by Report type"
+                      domain="[]" context="{'group_by':'report_type'}" />
+          </group>
+      </search>
+      </field>
+    </record>
+
+    <!--record id="view_search_report" model="ir.ui.view">
+      <field name="name">rocker.report.filter</field>
+      <field name="model">rocker.report</field>
+      <field name="arch" type="xml">
+      <search string="report_filter">
+             <filter name="filter_inactive"
+                    string="Inactive"
+                    domain="[('active','=',False)]"/>
+             <filter name="filter_active"
+                    string="Active"
+                    domain="[('active','=',True)]"/>
+          <separator/>
+            <filter name="single_reports"
+                    string="Single Reports"
+                    domain="[('report_type','=','single')]"/>
+            <filter name="collection_reports"
+                    string="Collection Reports"
+                    domain="[('report_type','=','collection')]"/>
+          <group expand="0" string="Group By...">
+                  <filter name="type_group" string="Group by Report type"
+                      domain="[]" context="{'group_by':'report_type'}" />
+          </group>
+      </search>
+      </field>
+    </record-->
 
 </odoo>

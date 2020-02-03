@@ -47,7 +47,7 @@ class Report(models.Model):
     report_type = fields.Selection(
         [('single', 'Single'), ('collection', 'Collection')], 'Report type', default='single')
     description = fields.Text('Description')
-    active = fields.Boolean('Active?', default=True)
+    active = fields.Boolean('Active', default=True)
     schedule_onoff = fields.Boolean('Scheduling Active', default=False)
     store_history = fields.Boolean('Store Excel to history', default=True)
     date_published = fields.Date(string='Published', default=fields.Date.today())
@@ -83,72 +83,10 @@ class Report(models.Model):
     company_id = fields.Many2one('res.company', string='User belonging this company hierarchy can view report')
     _sqldriver = False
 
-    @api.multi
+    # @api.multi
     #
-    def testexcel(self):
-        _logger.debug('Starting test')
-        mytmpdir = os.environ['TEMP']  # Must be uppercas
-        filename = "test_report.xlsx"
-        template_filename = "test_template.xlsx"
-        try:
-            os.remove(os.path.join(mytmpdir, filename))
-        except:
-            _logger.debug('Test_report does not exist')
-        try:
-            os.remove(os.path.join(mytmpdir, template_filename))
-        except:
-            _logger.debug('Test_template does not exist')
-        try:
-            _logger.debug('Pythoncom')
-            pythoncom.CoInitialize()
-            # first we create empty excel and store that to template field
-            _logger.debug('win32.gencache.Ensuredispatch')
-            excel = win32.gencache.EnsureDispatch('Excel.Application')
-            excel.DisplayAlerts = False  # disable overwrite warning
-            wb = excel.Workbooks.Add()
-            sheet = wb.Worksheets(1)
-            sheet.Name = "Data"
-            sheet.Range("A1").Value = "This is a template!"
-            _logger.debug('Save as ' + os.path.join(mytmpdir, template_filename) )
-            wb.SaveAs(os.path.join(mytmpdir, template_filename))
-            wb.Close()
-            #
-            excel.Application.Quit()
-            # now we open that as template
-            excel = win32.gencache.EnsureDispatch('Excel.Application')
-            excel.DisplayAlerts = False  # disable overwrite warning
-            wb = excel.Workbooks.Open(os.path.join(mytmpdir, template_filename))
-            sheet = wb.Worksheets("Data")
-            sheet.Range("A2").Value = "Added some data"
-            sheet.Range("B2").Value = "Added some data"
-            sheet.ListObjects.Add(1, sheet.Range(sheet.Cells(2, 1), sheet.Cells(2, 2))).Name = "DataTest"
-            wb.SaveAs(os.path.join(mytmpdir, filename))
-            wb.Close()
-            _logger.debug('Excel quit')
-            excel.Application.Quit()
-            # except:
-            #    raise exceptions.ValidationError('Excel: Something went wrong, check odoo.log')
-        except Exception as e:
-            raise exceptions.ValidationError(
-                'Excel test\n\nTried to create files to: ' + mytmpdir + '\n\nCheck folder access rights\n\n' + str(e))
-        context = {}
-        context['message'] = "Excel worksheet creation seems to work!\nGenerated Excels in " + mytmpdir
-        title = 'Success'
-        view = self.env.ref('rocker_app.rocker_popup_wizard')
-        view_id = False
-        return {
-            'name': title,
-            'type': 'ir.actions.act_window',
-            'view_type': 'form',
-            'view_mode': 'form',
-            'res_model': 'rocker.popup.wizard',
-            'views': [(view.id, 'form')],
-            'view_id': view.id,
-            'target': 'new',
-            'context': context,
-        }
 
-    @api.multi
+    # @api.multi
     # multi, otherwise no excels
     def export_xls(self, context=None):
         if self.active != True:
@@ -336,7 +274,14 @@ class Report(models.Model):
             aboutsheet.Name = 'About'
 
         aboutsheet.Cells(2, 2).Value = 'Please donate!'
-        for xlRow in xrange(2, 3, 1):
+        # odoo 12
+        #for xlRow in xrange(2, 3, 1):
+        #    aboutsheet.Hyperlinks.Add(Anchor=aboutsheet.Range('C{}'.format(xlRow)),
+        #                              Address="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=DGK3E2CC42EJ4&item_name=for+Rocker+Reporting+application+development&currency_code=EUR&source=url",
+        #                              ScreenTip="Click to Donate",
+        #                              TextToDisplay="Donate with PayPal")
+        # odoo 13
+        for xlRow in range(2, 3, 1):
             aboutsheet.Hyperlinks.Add(Anchor=aboutsheet.Range('C{}'.format(xlRow)),
                                       Address="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=DGK3E2CC42EJ4&item_name=for+Rocker+Reporting+application+development&currency_code=EUR&source=url",
                                       ScreenTip="Click to Donate",
@@ -478,7 +423,72 @@ class Report(models.Model):
             'url': '/web/content/rocker.report/%s/excel_report/%s?download=true' % (self.id, self.file_name)
         }
 
-    def show_about(self):
+    @api.model
+    def _testexcel(self):
+        _logger.debug('Starting test')
+        mytmpdir = os.environ['TEMP']  # Must be uppercas
+        filename = "test_report.xlsx"
+        template_filename = "test_template.xlsx"
+        try:
+            os.remove(os.path.join(mytmpdir, filename))
+        except:
+            _logger.debug('Test_report does not exist')
+        try:
+            os.remove(os.path.join(mytmpdir, template_filename))
+        except:
+            _logger.debug('Test_template does not exist')
+        try:
+            _logger.debug('Pythoncom')
+            pythoncom.CoInitialize()
+            # first we create empty excel and store that to template field
+            _logger.debug('win32.gencache.Ensuredispatch')
+            excel = win32.gencache.EnsureDispatch('Excel.Application')
+            excel.DisplayAlerts = False  # disable overwrite warning
+            wb = excel.Workbooks.Add()
+            sheet = wb.Worksheets(1)
+            sheet.Name = "Data"
+            sheet.Range("A1").Value = "This is a template!"
+            _logger.debug('Save as ' + os.path.join(mytmpdir, template_filename) )
+            wb.SaveAs(os.path.join(mytmpdir, template_filename))
+            wb.Close()
+            #
+            excel.Application.Quit()
+            # now we open that as template
+            excel = win32.gencache.EnsureDispatch('Excel.Application')
+            excel.DisplayAlerts = False  # disable overwrite warning
+            wb = excel.Workbooks.Open(os.path.join(mytmpdir, template_filename))
+            sheet = wb.Worksheets("Data")
+            sheet.Range("A2").Value = "Added some data"
+            sheet.Range("B2").Value = "Added some data"
+            sheet.ListObjects.Add(1, sheet.Range(sheet.Cells(2, 1), sheet.Cells(2, 2))).Name = "DataTest"
+            wb.SaveAs(os.path.join(mytmpdir, filename))
+            wb.Close()
+            _logger.debug('Excel quit')
+            excel.Application.Quit()
+            # except:
+            #    raise exceptions.ValidationError('Excel: Something went wrong, check odoo.log')
+        except Exception as e:
+            raise exceptions.ValidationError(
+                'Excel test\n\nTried to create files to: ' + mytmpdir + '\n\nCheck folder access rights\n\n' + str(e))
+        context = {}
+        context['message'] = "Excel worksheet creation seems to work!\nGenerated Excels in " + mytmpdir
+        title = 'Success'
+        view = self.env.ref('rocker_app.rocker_popup_wizard')
+        view_id = False
+        return {
+            'name': title,
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'rocker.popup.wizard',
+            'views': [(view.id, 'form')],
+            'view_id': view.id,
+            'target': 'new',
+            'context': context,
+        }
+
+    @api.model
+    def _show_about(self):
         _logger.debug('Open About ')
         context = {}
         context['message'] = "Rocker Reporting is nice"
