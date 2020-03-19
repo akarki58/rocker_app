@@ -11,9 +11,9 @@
        context="{'search_default_type_group':1}"
     />
 
-    <act_window id="action_rocker_excel"
-      name="Rocker Excels"
-      res_model="rocker.excel"
+    <act_window id="action_rocker_archive"
+      name="Rocker Archive"
+      res_model="rocker.archive"
       view_mode="tree,form"
     />
 
@@ -36,9 +36,9 @@
               action="action_rocker_report"
               parent="rocker_menu"
     />
-    <menuitem id="menu_rocker_excel"
-              name="Excels"
-              action="action_rocker_excel"
+    <menuitem id="menu_rocker_archive"
+              name="Report Archive"
+              action="action_rocker_archive"
               parent="rocker_menu"
     />
     <menuitem id="menu_rocker_database"
