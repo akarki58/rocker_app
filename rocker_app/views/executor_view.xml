@@ -12,9 +12,26 @@
                <xpath expr="//form" position="attributes">
                     <attribute name="create">false</attribute>
                 </xpath>
-               <xpath expr="//form" position="attributes">
+                <xpath expr="//form" position="attributes">
                     <attribute name="duplicate">false</attribute>
                 </xpath>
+                <xpath expr="//form" position="attributes">
+                    <attribute name="archive">false</attribute>
+                </xpath>
+                <xpath expr="//button[@name='create_action']" position="replace">
+                    <button name="method_direct_trigger" type="object" string="Run Manually" class="oe_highlight"/>
+                    <button name="toggle_active" type="object" class="oe_stat_button" string="Start/Stop">
+                    </button>
+
+                </xpath>
+                 <!--div class="oe_title" >
+                    <div class="oe_button_box" name="button_box">
+                        <widget name="web_ribbon" title="Stopped" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                        <widget name="web_ribbon" title="Running" bg_color="bg-success" attrs="{'invisible': [('active', '=', False)]}"/>
+
+                    </div>
+                    <field name="active" invisible="1"/>
+                </div-->
                 <div class="oe_title" position="before">
                     <div class="oe_button_box" name="button_box">
                         <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
@@ -22,27 +39,20 @@
                         </button>
                     </div>
                 </div>
+
                 <xpath expr="//field[@name='model_id']" position="replace">
                         <field name="model_id" readonly="1" position="replace"/>
                 </xpath>
                 <xpath expr="//field[@name='state']" position="replace">
-                        <field name="state" readonly="1" position="replace"/>
-                </xpath>
-                <xpath expr="//button[@name='create_action']" position="replace">
-                    <button name="method_direct_trigger" type="object" string="Run Manually" class="oe_highlight"/>
+                        <field name="state" readonly="1" position="replace" invisible="1"/>
                 </xpath>
                 <xpath expr="//group[@name='action_wrapper']" position="inside">
                     <group>
                         <field name="user_id" readonly="1" />
-                        <label for="interval_number" string="Execute Every" />
-                        <div>
-                            <field name="interval_number" class="oe_inline" default="10"/>
-                            <field name="interval_type" class="oe_inline" default="minutes"/>
-                        </div>
-                        <field name="nextcall"/>
-                        <field name="numbercall"/>
+                        <field name="interval_number" default="10"/>
+                        <field name="interval_type" default="minutes"/>
+                        <field name="nextcall" string="Next Execution"/>
                         <field name="priority"/>
-                        <!--field name="doall"/-->
                     </group>
                 </xpath>
             </field>

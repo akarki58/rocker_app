@@ -29,6 +29,7 @@ _logger = logging.getLogger(__name__)
 class rocker_connection():
 
     @api.multi
+    #
     def create_connection(self):
 
         _database_record = self

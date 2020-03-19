@@ -11,5 +11,3 @@ class rocker_popup_wizard(models.TransientModel):
         return False 
 
     name=fields.Text(string="Message",readonly=True,default=get_default)
-    
-    

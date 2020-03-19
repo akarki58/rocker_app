@@ -28,8 +28,14 @@ import win32com.client as win32
 from win32com.client import constants
 import pythoncom
 import base64
-import os
 from . import rocker_connection
+import os
+import re
+import sys
+import shutil
+import time
+#pip install python-pptx
+
 
 _logger = logging.getLogger(__name__)
 
@@ -39,25 +45,37 @@ _logger = logging.getLogger(__name__)
 # _logger.warning('A WARNING message')
 # _logger.error('An ERROR message')
 # --log_level=:DEBUG
+#class rocker_report_collection(models.Model):
+#    _name = 'rocker.report.collection'
+#    _description = 'Rocker Collection Reports'
+#    _order = 'sequence'
+#    report_id = fields.Integer('Report_id')
+#    collection_id = fields.Integer('Collection_id')
+#    name = fields.Char('Name')
+#    sequence = fields.Integer('sequence', help="Sequence for the handle.",default=10)
+
+
 
 class Report(models.Model):
+
     _name = 'rocker.report'
     _description = 'Rocker Reporting'
     name = fields.Char('Name', required=True)
     report_type = fields.Selection(
         [('single', 'Single'), ('collection', 'Collection')], 'Report type', default='single')
     description = fields.Text('Description')
-    active = fields.Boolean('Active?', default=True)
+    active = fields.Boolean('Active', default=True)
     schedule_onoff = fields.Boolean('Scheduling Active', default=False)
-    store_history = fields.Boolean('Store Excel to history', default=True)
+    store_history = fields.Boolean('Store to Archive', default=False)
     date_published = fields.Date(string='Published', default=fields.Date.today())
     database = fields.Many2one('rocker.database', string='Datasource',
                                default=lambda self: self.env['rocker.database'].search([('name', '=', 'Odoo')]))
     report_ids = fields.Many2many('rocker.report', 'rocker_report_collection', 'collection_id', 'report_id',
-                                  'Collection reports (check that Sheet names are unique!)',
-                                  domain=[('report_type', '=', 'single')])
+                                  'Collection reports:    (If Excel then check that Sheet names are unique!)',
+                                  domain="[('report_type', '=', 'single'),('report_application','=', report_application)]")
+    sequence = fields.Integer(string='Sequence', default=10)
     collection_ids = fields.Many2many('rocker.report', 'rocker_report_collection', 'report_id', 'collection_id',
-                                      'Report in Collections', domain=[('report_type', '=', 'collection')])
+                                      'Report in Collections', domain="[('report_type', '=', 'collection'),('report_application','=', report_application)]")
     column_headings = fields.Char('Column headings', default='Stage; Count', help="Column headings separated with ;")
     select_clause = fields.Text('Select', default=
     """select ns.name, count(*) 
@@ -66,12 +84,12 @@ class Report(models.Model):
     join note_stage ns on ns.id = nsr.stage_id 
     group by ns.name, ns.sequence
     order by ns.sequence""")
-    sheet_name = fields.Char('Excel Sheet name', default='Data')
-    excel_template = fields.Binary('Excel template', help="")
-    excel_report = fields.Binary('Last Excel Report')
+    sheet_name = fields.Char('Excel Sheet Name', default='Data')
+    report_template = fields.Binary('Report template', help="")
+    report = fields.Binary('Lastest Report')
     author_id = fields.Many2one('res.users', string='Author', default=lambda self: self.env.user)
     date_executed = fields.Datetime()
-    file_name = fields.Char('Excel Filename', size=64, default='report.xlsx')
+    file_name = fields.Char('Report Filename', size=64, default='report.xlsx')
     template_name = fields.Char('Template Filename', size=64, help="")
     perma_link = fields.Char('Permanent link to latest')
     execute_link = fields.Char('Execute & download link')
@@ -82,78 +100,305 @@ class Report(models.Model):
         [('min', 'min'), ('hour', 'hour'), ('day', 'day'), ('month', 'month')], 'Execute report every', default='day')
     company_id = fields.Many2one('res.company', string='User belonging this company hierarchy can view report')
     _sqldriver = False
-
-    @api.multi
     #
-    def testexcel(self):
-        _logger.debug('Starting test')
-        mytmpdir = os.environ['TEMP']  # Must be uppercas
-        filename = "test_report.xlsx"
-        template_filename = "test_template.xlsx"
-        try:
-            os.remove(os.path.join(mytmpdir, filename))
-        except:
-            _logger.debug('Test_report does not exist')
-        try:
-            os.remove(os.path.join(mytmpdir, template_filename))
-        except:
-            _logger.debug('Test_template does not exist')
-        try:
-            _logger.debug('Pythoncom')
-            pythoncom.CoInitialize()
-            # first we create empty excel and store that to template field
-            _logger.debug('win32.gencache.Ensuredispatch')
-            excel = win32.gencache.EnsureDispatch('Excel.Application')
-            excel.DisplayAlerts = False  # disable overwrite warning
-            wb = excel.Workbooks.Add()
-            sheet = wb.Worksheets(1)
-            sheet.Name = "Data"
-            sheet.Range("A1").Value = "This is a template!"
-            _logger.debug('Save as ' + os.path.join(mytmpdir, template_filename) )
-            wb.SaveAs(os.path.join(mytmpdir, template_filename))
-            wb.Close()
-            #
-            excel.Application.Quit()
-            # now we open that as template
-            excel = win32.gencache.EnsureDispatch('Excel.Application')
-            excel.DisplayAlerts = False  # disable overwrite warning
-            wb = excel.Workbooks.Open(os.path.join(mytmpdir, template_filename))
-            sheet = wb.Worksheets("Data")
-            sheet.Range("A2").Value = "Added some data"
-            sheet.Range("B2").Value = "Added some data"
-            sheet.ListObjects.Add(1, sheet.Range(sheet.Cells(2, 1), sheet.Cells(2, 2))).Name = "DataTest"
-            wb.SaveAs(os.path.join(mytmpdir, filename))
-            wb.Close()
-            _logger.debug('Excel quit')
-            excel.Application.Quit()
-            # except:
-            #    raise exceptions.ValidationError('Excel: Something went wrong, check odoo.log')
-        except Exception as e:
-            raise exceptions.ValidationError(
-                'Excel test\n\nTried to create files to: ' + mytmpdir + '\n\nCheck folder access rights\n\n' + str(e))
-        context = {}
-        context['message'] = "Excel worksheet creation seems to work!\nGenerated Excels in " + mytmpdir
-        title = 'Success'
-        view = self.env.ref('rocker_app.rocker_popup_wizard')
-        view_id = False
-        return {
-            'name': title,
-            'type': 'ir.actions.act_window',
-            'view_type': 'form',
-            'view_mode': 'form',
-            'res_model': 'rocker.popup.wizard',
-            'views': [(view.id, 'form')],
-            'view_id': view.id,
-            'target': 'new',
-            'context': context,
-        }
+    # new version 2.0
+    report_application = fields.Selection([('excel', 'Excel Report'), ('powerpoint', 'PowerPoint Report')], 'Report App', default='excel', required=True)
+    element = fields.Selection([('table', 'Table'), ('chart', 'Chart')], 'Element type', default='table', required=False)
+    legend = fields.Selection([('none', 'None'), ('bottom', 'Bottom'), ('right', 'Right')], 'Legend', default='bottom', required=False)
+    elements_per_slide = fields.Selection([('1', '1'), ('2', '2'), ('4', '4'), ('6', '6')], 'Elements per Slide', default='1', required=False)
+    slide_title = fields.Char('Slide Title')
+    show_values = fields.Selection([('none', 'None'), ('inside', 'Inside'), ('outside', 'Outside'), ('pros_inside', '% Inside'), ('pros_outside', '% Outside')],'Show values', default='none')
+    #python-pptx supports adding charts and modifying existing ones. Most chart types other than 3D types are supported.
+    chart_type = fields.Selection([
+        #('-4098','3D Area'),
+        #('78','3D Stacked Area'),
+        #('79','100% Stacked Area'),
+        #('60','3D Clustered Bar'),
+        #('61','3D Stacked Bar'),
+        #('62','3D 100% Stacked Bar'),
+        #('-4100','3D Column'),
+        #('54','3D Clustered Column'),
+        #('55','3D Stacked Column'),
+        #('56','3D 100% Stacked Column'),
+        #('-4101','3D Line'),
+        #('-4102','3D Pie'),
+        #('70','Exploded 3D Pie'),
+        ('1','Area'),
+        ('76','Stacked Area'),
+        ('77','100% Stacked Area'),
+        ('57','Clustered Bar'),
+        #('71','Bar of Pie'),
+        ('58','Stacked Bar'),
+        ('59','100% Stacked Bar'),
+        ('15','Bubble'),
+        #('87','Bubble with 3D effects'),
+        ('51','Clustered Column'),
+        ('52','Stacked Column'),
+        ('53','100% Stacked Column'),
+        #('102','Clustered Cone Bar'),
+        #('103','Stacked Cone Bar'),
+        #('104','100% Stacked Cone Bar'),
+        #('105','3D Cone Column'),
+        #('99','Clustered Cone Column'),
+        #('100','Stacked Cone Column'),
+        #('101','100% Stacked Cone Column'),
+        #('95','Clustered Cylinder Bar'),
+        #('96','Stacked Cylinder Bar'),
+        #('97','100% Stacked Cylinder Bar'),
+        #('98','3D Cylinder Column'),
+        #('92','Clustered Cone Column'),
+        #('93','Stacked Cone Column'),
+        #('94','100% Stacked Cylinder Column'),
+        ('-4120','Doughnut'),
+        ('80','Exploded Doughnut'),
+        ('4','Line'),
+        ('65','Line with Markers'),
+        ('66','Stacked Line with Markers'),
+        ('67','100% Stacked Line with Markers'),
+        ('63','Stacked Line'),
+        ('64','100% Stacked Line'),
+        ('5','Pie'),
+        ('99995','Pie  (category from rows)'),
+        ('69','Exploded Pie'),
+        ('999969','Exploded Pie (category from rows)'),
+        #('68','Pie of Pie'),
+        #('109','Clustered Pyramid Bar'),
+        #('110','Stacked Pyramid Bar'),
+        #('111','100% Stacked Pyramid Bar'),
+        #('112','3D Pyramid Column'),
+        #('106','Clustered Pyramid Column'),
+        #('107','Stacked Pyramid Column'),
+        #('108','100% Stacked Pyramid Column'),
+        ('-4151','Radar'),
+        ('82','Filled Radar'),
+        ('81','Radar with Data Markers'),
+        #('140','Map chart'),
+        #('88','High-Low-Close'),
+        #('89','Open-High-Low-Close'),
+        #('90','Volume-High-Low-Close'),
+        #('91','Volume-Open-High-Low-Close'),
+        #('83','3D Surface'),
+        #('85','Surface (Top View)'),
+        #('86','Surface (Top View wireframe)'),
+        #('84','3D Surface (wireframe)'),
+        ('-4169','Scatter'),
+        ('74','Scatter with Lines'),
+        ('75','Scatter with Lines and No Data Markers'),
+        ('72','Scatter with Smoothed Lines'),
+        ('73','Scatter with Smoothed Lines and No Data Markers'),
+        ], 'Chart type', required=False)
 
-    @api.multi
+
+    @api.multi # odoo 13 does not use these
     # multi, otherwise no excels
-    def export_xls(self, context=None):
+    def export_report(self, context=None):
         if self.active != True:
             raise exceptions.ValidationError('Report is not active or you are not allowed to view it!')
         _logger.info('Rocker reporting / Executing report: ' + self.name)
+        if self.report_application == 'excel':
+            self.export_xls(self)
+        elif self.report_application == 'powerpoint':
+            self.export_ppt(self)
+        else:
+            raise exceptions.ValidationError('Report type?')
+
+        # download
+        return {
+                'type': 'ir.actions.act_url',
+                'name': 'report',
+                'url': '/web/content/rocker.report/%s/report/%s?download=true' % (self.id, self.file_name),
+            }
+
+    @api.multi # odoo 13 does not use these
+    def export_ppt(self, context=None):
+        from pptx import Presentation
+        from pptx.chart.data import CategoryChartData
+        from pptx.enum.chart import XL_CHART_TYPE
+
+        filename = ''
+        pp_title = ''
+        if not self.file_name:
+            self.file_name = 'report.pptx'
+        filename = self.file_name.strip()
+        if not '.ppt' in filename:
+            _logger.debug('Changing name ')
+            self.file_name = filename.replace('.xlsx','')
+            self.file_name = self.file_name + '.pptx'
+            filename = self.file_name.strip()
+        odoo_filename = self.file_name.strip()
+        temp_filename = ''
+        if not odoo_filename:
+            odoo_filename = 'report.pptx'
+        if self.slide_title:
+            pp_title = self.slide_title.strip()
+        else:
+            pp_title = '' # case powerpoint slide without title
+
+        # remove existing from temp
+        try:
+            os.unlink(os.path.join(mytmpdir, filename))
+        except:
+            _logger.debug('File does not exist in TEMP')
+        try:
+            os.unlink(os.path.join(mytmpdir, template_filename))
+        except:
+            _logger.debug('Template does not exist in TEMP')
+        mytmpdir = os.environ['TEMP']  # Must be uppercas
+
+        #        # take template if exists
+        if self.report_template:
+            try:
+                file = tempfile.NamedTemporaryFile(mode='w+b', delete=False, suffix='.xlsx')
+                filename = file.name
+                temp_filename = file.name
+                _logger.debug('Using temp file: ' + file.name)
+                file2 = base64.b64decode(self.report_template)
+                file.write(file2)
+                file.close()
+            except:
+                _logger.error('Exception: Temp file open')
+                raise exceptions.ValidationError('Temp file in use, quit all Powewrpoints from task manager')
+
+            # open powerpoint(template) from TEMP
+            prs = Presentation(filename)
+            _logger.debug('Using template')
+        else:
+            # generate empty excel
+            filename = self.file_name
+            filename = os.path.join(mytmpdir, filename)
+            _logger.debug('Using empty Powerpoint: ' + filename)
+            prs = Presentation()
+
+        if self.report_type == 'single':
+            _logger.debug('Single PowerPoint report')
+            slide = None
+            pp_title = ''
+            pp_title = self.slide_title
+            collection = False
+            cnt_report = 1
+            element_written = 1
+            page_elements = '1'
+            slides_created = 0
+
+            con = self._create_connection(self.database)
+
+            if not pp_title:
+                slide = prs.slides.add_slide(prs.slide_layouts[6])   # blanc de blanc
+            else:
+                slide = prs.slides.add_slide(prs.slide_layouts[5])    # title only
+                title = slide.shapes.title
+                title.text = pp_title # collection report title set
+            slides_created += 1
+
+            # let's fill with data
+            if con:
+                _logger.debug('Populate single Powerpoint report')
+                # one per page
+                slide, element_written = self._populate_pp_sql(self, con, prs, slide, page_elements, pp_title, self.select_clause, self.column_headings, cnt_report, element_written, collection)
+            else:
+                raise exceptions.ValidationError('No DB connection')
+
+        elif self.report_type == 'collection':
+            _logger.debug('Executing reports: ')
+            _logger.debug(self.report_ids)
+            # do loop here
+            if not self.elements_per_slide:
+                self.elements_per_slide = '1'
+            page_elements = self.elements_per_slide
+            pp_title = ''
+            pp_title = self.slide_title
+            slide = None
+            cnt_report = 1
+            element_written = 1
+            slides_created = 0
+            collection = True
+            for report in self.report_ids:
+                con = self._create_connection(report.database)
+                if (cnt_report == 1):
+                    if not pp_title:
+                         slide = prs.slides.add_slide(prs.slide_layouts[6])   # blanc de blanc
+                    else:
+                        slide = prs.slides.add_slide(prs.slide_layouts[5])    # title only
+                        title = slide.shapes.title
+                        title.text = pp_title # collection report title set
+                    slides_created += 1
+                    _logger.debug('Report number ' +  str(cnt_report) + ' on Slide: ' + str(slides_created))
+                if con:
+                    _logger.debug('PowerPoint Collection report populate')
+                    slide, element_written = self._populate_pp_sql(report, con, prs, slide, page_elements, pp_title, report.select_clause, report.column_headings, cnt_report, element_written, collection)
+                else:
+                    raise exceptions.ValidationError('No DB connection')
+                cnt_report += 1
+                _logger.debug('Count report sofar: ' + str(cnt_report))
+                _logger.debug('Element written sofar: ' + str(element_written))
+                if cnt_report > int(page_elements):
+                    cnt_report = 1
+                if element_written == 1: # we need new slide, next one coming to place 1
+                    cnt_report = 1
+
+
+            # we use temp for saving excel
+        file = tempfile.NamedTemporaryFile(mode='w+b', delete=True, suffix='.pptx')
+        filename = file.name
+        _logger.debug('Storing Report to temp file: ' + file.name)
+        file.close()
+
+        # save the presentation
+        prs.save(filename)
+
+        # slides ready let's save to database
+        datenow = fields.datetime.now()
+        _logger.debug('Open file for storing to Odoo: ' + filename)
+        file = open(filename, 'rb')
+        file.seek(0)
+        # save to report log
+        if self.store_history:
+            _export_id = self.sudo().env['rocker.archive'].create({'name': self.name, 'date_executed': datenow,
+                                                                   'report_file': base64.b64encode(file.read()),
+                                                                   'file_name': odoo_filename}, ).id
+        # save generated excel
+        base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+        permlink = base_url + '/web/login?db=' + self._cr.dbname + '&redirect=' + base_url + '/web/content/rocker.report/%s/report/%s?download=true' % (
+            self.id, self.file_name)
+        execlink = self.env['ir.config_parameter'].sudo().get_param(
+            'web.base.url') + '/web/login?db=' + self._cr.dbname + '&redirect=' + self.env[
+                       'ir.config_parameter'].sudo().get_param(
+            'web.base.url') + '/web?#model=rocker.report&view_type=list&menu_id=' + str(
+            self.env.ref('rocker_app.rocker_menu').id) + '&action=' + str(
+            self.env.ref('rocker_app.rocker_report_execute_request').id) + '&id=' + str(self.id)
+        file.seek(0)
+        self.sudo().write({
+            'file_name': odoo_filename,
+            'report': base64.b64encode(file.read()),
+            'date_executed': datenow,
+            'perma_link': permlink,
+            'execute_link': execlink,
+        })
+
+        try:
+            file.close()  # closes the file, so we can right remove it
+        except:
+            _logger.debug("Can't close file" + filename)
+        # removing template too
+        try:
+            os.unlink(filename)
+            _logger.debug("% s removed successfully" % filename)
+        except OSError as error:
+            _logger.debug(error)
+            _logger.error("File can not be removed: " + filename)
+        # removing template too if exist
+        if temp_filename:
+            try:
+                os.unlink(temp_filename)
+                _logger.debug("% s removed successfully" % temp_filename)
+            except OSError as error:
+                _logger.debug(error)
+                _logger.error("File can not be removed: " + temp_filename)
+
+        return True
+
+    @api.multi # odoo 13 does not use these
+    def export_xls(self, context=None):
         filename = ''
         if not self.file_name:
             self.file_name = 'report.xlsx'
@@ -176,20 +421,36 @@ class Report(models.Model):
             os.unlink(os.path.join(mytmpdir, template_filename))
         except:
             _logger.debug('Template does not exist in TEMP')
-
         pythoncom.CoInitialize()
-        excel = win32.gencache.EnsureDispatch('Excel.Application')
+        try:
+            excel = win32.gencache.EnsureDispatch('Excel.Application')
+        except AttributeError:
+            # Remove cache and try again.
+            MODULE_LIST = [m.__name__ for m in sys.modules.values()]
+            for module in MODULE_LIST:
+                if re.match(r'win32com\.gen_py\..+', module):
+                    del sys.modules[module]
+            try:
+                shutil.rmtree(os.path.join(os.environ.get('LOCALAPPDATA'), 'Temp', 'gen_py'))  # original, and when running as a odoo service
+                shutil.rmtree(os.path.join(os.environ['TEMP'], 'gen_py'))
+            except:
+                _logger.error('gen_py remove error')
+            #from win32com import client
+            excel = win32.gencache.EnsureDispatch('Excel.Application')
+        except:
+            _logger.error("EnsureDispatch ('Excel.Application'). You may need to restart server")
+            return False
         excel.DisplayAlerts = False  # disable overwrite warning
         mytmpdir = os.environ['TEMP']  # Must be uppercas
 
         # take template if exists
-        if self.excel_template:
+        if self.report_template:
             try:
                 file = tempfile.NamedTemporaryFile(mode='w+b', delete=False, suffix='.xlsx')
                 filename = file.name
                 temp_filename = file.name
                 _logger.debug('Using temp file: ' + file.name)
-                file2 = base64.b64decode(self.excel_template)
+                file2 = base64.b64decode(self.report_template)
                 file.write(file2)
                 file.close()
             except:
@@ -245,7 +506,7 @@ class Report(models.Model):
         # we use temp for saving excel
         file = tempfile.NamedTemporaryFile(mode='w+b', delete=True, suffix='.xlsx')
         filename = file.name
-        _logger.debug('Storing Excel to temp file: ' + file.name)
+        _logger.debug('Storing Report to temp file: ' + file.name)
         file.close()
 
         # save the  workbook
@@ -259,12 +520,12 @@ class Report(models.Model):
         file.seek(0)
         # save to report log
         if self.store_history:
-            _export_id = self.sudo().env['rocker.excel'].create({'name': self.name, 'date_executed': datenow,
-                                                                 'excel_file': base64.b64encode(file.read()),
+            _export_id = self.sudo().env['rocker.archive'].create({'name': self.name, 'date_executed': datenow,
+                                                                 'report_file': base64.b64encode(file.read()),
                                                                  'file_name': odoo_filename}, ).id
         # save generated excel
         base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
-        permlink = base_url + '/web/login?db=' + self._cr.dbname + '&redirect=' + base_url + '/web/content/rocker.report/%s/excel_report/%s?download=true' % (
+        permlink = base_url + '/web/login?db=' + self._cr.dbname + '&redirect=' + base_url + '/web/content/rocker.report/%s/report/%s?download=true' % (
         self.id, self.file_name)
         execlink = self.env['ir.config_parameter'].sudo().get_param(
             'web.base.url') + '/web/login?db=' + self._cr.dbname + '&redirect=' + self.env[
@@ -276,7 +537,7 @@ class Report(models.Model):
         self.sudo().write({
             'file_name': odoo_filename,
             'sheet_name': sheetname,
-            'excel_report': base64.b64encode(file.read()),
+            'report': base64.b64encode(file.read()),
             'date_executed': datenow,
             'perma_link': permlink,
             'execute_link': execlink,
@@ -300,12 +561,7 @@ class Report(models.Model):
                 _logger.debug(error)
                 _logger.error("File can not be removed")
 
-        # download
-        return {
-            'type': 'ir.actions.act_url',
-            'name': 'excel',
-            'url': '/web/content/rocker.report/%s/excel_report/%s?download=true' % (self.id, self.file_name),
-        }
+        return True
 
     def _worksheet(self, workbook, sheet, context=None):
         _logger.debug('Trying to find sheet: ' + sheet)
@@ -336,7 +592,14 @@ class Report(models.Model):
             aboutsheet.Name = 'About'
 
         aboutsheet.Cells(2, 2).Value = 'Please donate!'
-        for xlRow in xrange(2, 3, 1):
+        # odoo 12
+        #for xlRow in xrange(2, 3, 1):
+        #    aboutsheet.Hyperlinks.Add(Anchor=aboutsheet.Range('C{}'.format(xlRow)),
+        #                              Address="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=DGK3E2CC42EJ4&item_name=for+Rocker+Reporting+application+development&currency_code=EUR&source=url",
+        #                              ScreenTip="Click to Donate",
+        #                              TextToDisplay="Donate with PayPal")
+        # odoo 13
+        for xlRow in range(2, 3, 1):
             aboutsheet.Hyperlinks.Add(Anchor=aboutsheet.Range('C{}'.format(xlRow)),
                                       Address="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=DGK3E2CC42EJ4&item_name=for+Rocker+Reporting+application+development&currency_code=EUR&source=url",
                                       ScreenTip="Click to Donate",
@@ -445,6 +708,447 @@ class Report(models.Model):
             con.close()
         return True
 
+    def _populate_pp_sql(self, report, con, prs, slide, page_elements, pp_title, sql, headings, cnt_report, last_element_written, collection, context=None):
+        from pptx.enum.chart import XL_CHART_TYPE
+        from pptx.enum.chart import XL_LEGEND_POSITION
+        from pptx.enum.chart import XL_LABEL_POSITION
+        from pptx.util import Pt
+        from pptx.util import Inches
+
+        self = report
+        _headerlist = headings.split(';')
+        header = [head.strip() for head in _headerlist]
+        cols = len(header)
+        slides_created = 1
+        element_written = 1
+        rows_per_table = 1
+        if last_element_written > 1:    # we have created tables and now chart coming
+            element_written = last_element_written
+        #
+        #
+        #there are 72 points per inch
+        # 5" x 72 points = 360
+        # 11.5" x 72 = 828
+        # 0.9 x 72 = 65
+        # 2 x 72 = 144
+        # slide width = 10"
+        # slide height 7.5"
+        # height - titlespace 5.5
+        # element below title y = +2
+        font_size = 18
+
+        if self.element == 'chart':
+            if self.chart_type == '15':
+                from pptx.chart.data import BubbleChartData
+                chart_data = BubbleChartData()
+            elif self.chart_type in ['-4169','74','75','72','73']:
+                from pptx.chart.data import XyChartData
+                chart_data = XyChartData()
+            else:
+                from pptx.chart.data import CategoryChartData
+                chart_data = CategoryChartData()
+                categories = header   # but first column contains series
+                categories.pop(0)
+                if self.chart_type not in ['99995', '999969']:   # categories from row data specialities
+                    chart_data.categories = categories
+                else:
+                    categories = []
+
+
+        # select
+        cur = con.cursor()
+        try:
+            cur.execute(sql)
+        except Exception as e:
+            raise exceptions.ValidationError('Error in Select clause!\n\n' + str(e))
+
+        records = cur.fetchall()
+        i = len(records)
+
+        j = 0
+        r = 0
+        prev_seriesname = ''
+        prev_categoryname = ''
+        cnt = 1
+        pievalues = []
+        # add data rows
+        for row in records:
+
+            if self.element == 'table':
+                if len(row) != len(header):
+                    raise exceptions.ValidationError('Count of headers is not the same as count of data columns\Separate headers with ;\nOr check your SQL')
+                if (r >= rows_per_table):
+                    # create slide , first slide created already in export_ppt
+                    if (element_written == 1):
+                        if not pp_title:
+                            slide = prs.slides.add_slide(prs.slide_layouts[6])   # blanc de blanc
+                        else:
+                            slide = prs.slides.add_slide(prs.slide_layouts[5])    # title only
+                            title = slide.shapes.title
+                            title.text = pp_title #  report title set
+
+                        slides_created = slides_created + 1
+                        _logger.debug('New slide again: ' +  str(slides_created))
+                    r = 0
+
+                if (r==0):
+                    add_title = False
+                    if pp_title:
+                        add_title = True
+                    # find location
+                    element_written, rows_per_table, font_size, x, y, cx, cy = self._find_place(page_elements, element_written, add_title)
+                    _logger.debug('Table Element written: ' +  str(element_written))
+                    # create table
+                    try:
+                        shape = slide.shapes.add_table(rows_per_table, cols, x, y, cx, cy)
+                    except Exception as e:
+                        raise exceptions.ValidationError('Error in Table create!\n\n' + str(e))
+
+                    element_written += 1
+                    cnt += 1
+                    table = shape.table
+                    # format table, set font
+                    for i in range(rows_per_table):
+                        for j in range(cols):
+                            cell = table.cell(i, j)
+                            cell.text = ' '
+                            for paragraph in cell.text_frame.paragraphs:
+                                for run in paragraph.runs:
+                                    run.font.size = Pt(font_size)
+
+                # set headers
+                    c = 0
+                    for col in header:
+                        cell = table.cell(0, c)
+                        cell.text = header[c]
+                        run = table.cell(0, c).text_frame.paragraphs[0].runs[0]
+                        run.font.size = Pt(font_size)
+                        c = c + 1
+                    _logger.debug('Table created & formatted')
+                    r = 1
+                # set data rows
+                _logger.debug('Filling Table row: ' +  str(r))
+                c = 0
+                for col in row:
+                    cell = table.cell(r, c)
+                    cell.text = str(row[c])
+                    run = table.cell(r, c).text_frame.paragraphs[0].runs[0]
+                    run.font.size = Pt(font_size)
+                    c = c + 1
+                r = r + 1
+            elif self.element == 'chart':
+
+                if self.chart_type == '15':
+                    _logger.debug('Bubble chart 15 ')
+                    #                #series_1.add_data_point(0.7, 2.7, 10)
+                    seriesname = str(row[0])
+                    _logger.debug(seriesname)
+                    valuelist = list(row)
+                    valuelist.pop(0) # series name taken away
+                    _logger.debug('Valuelist: ')
+                    _logger.debug(valuelist)
+                    #check if we have x & y values
+                    if len(valuelist) != 3:
+                        raise exceptions.ValidationError('For Bubble chart we need: Series, ValueX, ValueY, ValueSize \nWe must have 3 values (x & y)\nCheck your SQL')
+                    # check if rest are numbers only
+                    for item in valuelist:
+                        if item is not None:
+                            if not (isinstance(item, (int, float, complex)) and not isinstance(item, bool)):
+                            #except ValueError:
+                                raise exceptions.ValidationError('Series, Value, Value, Value \nNow we have string as value\nCheck your SQL')
+                    #tuplelist = tuple(valuelist)
+                    if not seriesname == prev_seriesname:
+                        _logger.debug('Scatter adding series: ' + seriesname)
+                        series = chart_data.add_series(seriesname)
+                        prev_seriesname = seriesname
+                    try:
+                        series.add_data_point(valuelist[0],valuelist[1],valuelist[2])
+                    except Exception as e:
+                        raise exceptions.ValidationError('Error in Bubble!\n\n' + str(e))
+                elif self.chart_type in ['-4169','74','75','72','73']:
+                    _logger.debug('Chart XY')
+                    seriesname = str(row[0])
+                    _logger.debug(seriesname)
+                    valuelist = list(row)
+                    valuelist.pop(0) # series name taken away
+                    _logger.debug('Valuelist: ')
+                    _logger.debug(valuelist)
+                    #check if we have x & y values
+                    if len(valuelist) != 2:
+                        raise exceptions.ValidationError('For XY diagram (Scatter) we need: Series, ValueX, ValueY \nWe must have 2 values (x & y)\nCheck your SQL')
+                   # check if rest are numbers only
+                    for item in valuelist:
+                        if item is not None:
+                            if not (isinstance(item, (int, float, complex)) and not isinstance(item, bool)):
+                            #except ValueError:
+                                raise exceptions.ValidationError('Series, Value, Value \nNow we have string as value\nCheck your SQL')
+                    #tuplelist = tuple(valuelist)
+                    if not seriesname == prev_seriesname:
+                        _logger.debug('Scatter adding series: ' + seriesname)
+                        series = chart_data.add_series(seriesname)
+                        prev_seriesname = seriesname
+                    try:
+                        series.add_data_point(valuelist[0],valuelist[1])
+                    except Exception as e:
+                        raise exceptions.ValidationError('Error in XY Chart!\n\n' + str(e))
+                else:
+                    series = str(row[0])
+                    _logger.debug(series)
+                    valuelist = list(row)
+                    valuelist.pop(0) # series name taken away
+                    # check if rest are numbers only
+                    _logger.debug('Valuelist: ')
+                    _logger.debug(valuelist)
+                    for item in valuelist:
+                        if item is not None:
+                            if not (isinstance(item, (int, float, complex)) and not isinstance(item, bool)):
+                            #except ValueError:
+                                raise exceptions.ValidationError('Series/Category, Value, Value, Value ... \nNow we have string as value\nCheck your SQL')
+                    tuplelist = tuple(valuelist)
+                    _logger.debug(tuplelist)
+                    if self.chart_type in ['99995', '999969']:
+                        if len(valuelist) != 1:
+                            raise exceptions.ValidationError('For Pie (Category from row data) chart we need: Category, ValueX\nWe must have 2 values (CategoryName & Value)\nCheck your SQL')
+                        if not row[0] == prev_categoryname:
+                            _logger.debug('Pie category from row ' + str(row[0]))
+                            prev_categoryname = row[0]
+                            categories.append(row[0])
+                            series = 'series1'
+                            pievalues.append(row[1])
+                        else:
+                            raise exceptions.ValidationError('For Pie (Category from row data) every data row must contain unique Category (column 1 = Category Name)')
+                    else:
+                        try:
+                            chart_data.add_series(series,tuplelist)
+                        except Exception as e:
+                            raise exceptions.ValidationError('Error in Pie Chart!\n\n' + str(e))
+
+    # chart ready lets add
+        if self.element == 'chart':
+            add_title = False
+            if pp_title:
+                add_title = True
+            # find location
+            element_written, rows_per_table, font_size, x, y, cx, cy = self._find_place(page_elements, element_written, add_title)
+
+            chart = int(self.chart_type)
+            if chart == 99995:  # AK speciality Pie
+                chart = 5
+                chart_data.categories = categories
+                chart_data.add_series('series1',pievalues)
+            if chart == 999969:  # AK speciality Exploded Pie
+                chart = 69
+                chart_data.categories = categories
+                chart_data.add_series('series1',pievalues)
+            try:
+                graphic_frame = slide.shapes.add_chart(chart, x, y, cx, cy, chart_data)
+            except Exception as e:
+                raise exceptions.ValidationError('Error in Graphic frame creation!\n\n' + str(e))
+
+            element_written += 1
+
+            chart = graphic_frame.chart
+            chart.font.size = Pt(font_size)
+            from pptx.enum.shapes import MSO_SHAPE
+            from pptx.dml.color import RGBColor
+            #shapes2 = slide.shapes
+            shapeX = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, x, y, cx, cy)   # add black frame
+            fill = shapeX.fill
+            fill.solid()
+            line = shapeX.line
+            line.color.rgb = RGBColor(0, 0, 0)  # add black frame
+            #fill.fore_color.rgb = RGBColor(0x01, 0x23, 0x45)
+            fill.background() # no color inside
+
+            # show values
+            #
+            # value setting not working
+            #  AREA
+            # LINE
+            # RADAR
+            # BUBBLE
+            # SCATTER
+
+            if self.chart_type not in ['1','76','77','15','-4120','80','4','65','66','67','63','64','-4151','82',
+                                       '81','-4169','75','72','73','-4169','74','75','72']:
+
+                # stacked bars value only inside
+                if self.chart_type in ['58','59','52','53',] and self.show_values in ['outside','pros_inside','pros_outside']:
+                    self.show_values = 'inside'
+                #
+                # percentages only for pie charts
+                if self.chart_type not in ['5','99995','69','999969',] and self.show_values in ['pros_inside','pros_outside']:
+                    self.show_values = 'none'
+                #
+
+                if self.show_values == 'inside':
+                    chart.plots[0].has_data_labels = True
+                    data_labels = chart.plots[0].data_labels
+                    data_labels.show_value = True
+                    #data_labels.number_format = '0%'
+                    data_labels.position = XL_LABEL_POSITION.INSIDE_END
+                elif self.show_values == 'outside':
+                    chart.plots[0].has_data_labels = True
+                    data_labels = chart.plots[0].data_labels
+                    data_labels.show_value = True
+                    #data_labels.number_format = '0%'
+                    data_labels.position = XL_LABEL_POSITION.OUTSIDE_END
+                elif self.show_values == 'pros_inside':
+                    chart.plots[0].has_data_labels = True
+                    data_labels = chart.plots[0].data_labels
+                    data_labels.show_percentage = True
+                    data_labels.show_value = False
+                    data_labels.number_format = '0%'
+                    data_labels.position = XL_LABEL_POSITION.INSIDE_END
+                elif self.show_values == 'pros_outside':
+                    chart.plots[0].has_data_labels = True
+                    data_labels = chart.plots[0].data_labels
+                    data_labels.show_value = False
+                    data_labels.show_percentage = True
+                    data_labels.number_format = '0%'
+                    data_labels.position = XL_LABEL_POSITION.OUTSIDE_END
+            else:
+                self.show_values = ''
+            #legend
+            if self.legend == 'bottom':
+                chart.has_legend = True
+                # XL_LEGEND_POSITION.BOTTOM
+                # XL_LEGEND_POSITION.RIGHT
+                chart.legend.position = XL_LEGEND_POSITION.BOTTOM
+                chart.legend.include_in_layout = False
+            elif self.legend == 'right':
+                chart.has_legend = True
+                # XL_LEGEND_POSITION.BOTTOM
+                # XL_LEGEND_POSITION.RIGHT
+                chart.legend.position = XL_LEGEND_POSITION.RIGHT
+                chart.legend.include_in_layout = False
+            else:
+                chart.has_legend = False
+                # XL_LEGEND_POSITION.BOTTOM
+                # XL_LEGEND_POSITION.RIGHT
+                #chart.legend.position = XL_LEGEND_POSITION.BOTTOM
+                #chart.legend.include_in_layout = False
+
+            # chart title
+            chart_title = ''
+            if self.slide_title:
+                chart_title = self.slide_title
+            chart.chart_title.text_frame.text = chart_title
+            chart.chart_title.text_frame.paragraphs[0].font.size = Pt(font_size)
+
+
+        cur.close()
+
+         # end
+        if con is not None:
+            con.close()
+        #return True
+        return slide, element_written
+
+    def _find_place(self, page_elements, element_written, pp_title):
+        from pptx.util import Pt
+        from pptx.util import Inches
+
+        x1, x2, x3, x4, x5, x6 = [0,0,0,0,0,0]
+        y1, y2, y3, y4, y5, y6 = [0,0,0,0,0,0]
+        cx, cy = [0,0]
+        rows_per_table = 0
+        font_size = 12
+        # pp_title is True or False
+        _logger.debug('Page_elements: ' + str(page_elements))
+        _logger.debug('Elements_written: ' + str(element_written))
+
+        if page_elements == '1':
+            x1, x2, x3, x4, x5, x6 = [Inches(0.5), Inches(0), Inches(0),0,0,0]
+            if pp_title:   # slide title, move element down 1 inches, height -1 Inc
+                y1, y2, y3, y4, y5, y6 = [Inches(1.5), Inches(0), Inches(0),0,0,0]
+                cx, cy = [Inches(9), Inches(5.7)]
+            else:
+                y1, y2, y3, y4, y5, y6 = [Inches(0.5), Inches(0), Inches(0),0,0,0]
+                cx, cy = [Inches(9), Inches(6.7)]
+                _logger.debug('No title coordinates set')
+            rows_per_table = 13  # header plus 12 data rows
+            font_size = 18
+        elif page_elements == '2':
+            x1, x2, x3, x4, x5, x6 = [Inches(0.5), Inches(5.0), Inches(0),0,0,0]
+            if pp_title:   # slide title, move element down 1 inches, height -1 Inc
+                y1, y2, y3, y4, y5, y6 = [Inches(1.5), Inches(1.5), Inches(0),0,0,0]
+                cx, cy = [Inches(4.4), Inches(5.7)]
+            else:
+                y1, y2, y3, y4, y5, y6 = [Inches(0.5), Inches(0.5), Inches(0),0,0,0]
+                cx, cy = [Inches(4.4), Inches(6.7)]
+            rows_per_table = 13
+            font_size = 14
+        elif page_elements == '4':
+            x1, x2, x3, x4, x5, x6 = [Inches(0.5), Inches(5.0), Inches(0.5), Inches(5.0),0,0]
+            if pp_title:   # slide title, move element down 1 inches, height -1 Inc
+                y1, y2, y3, y4, y5, y6 = [Inches(1.5), Inches(1.5), Inches(4.5), Inches(4.5),0,0]
+                cx, cy = [Inches(4.4), Inches(2.67)]
+            else:
+                y1, y2, y3, y4, y5, y6 = [Inches(0.5), Inches(0.5), Inches(4.0), Inches(4.0),0,0]
+                cx, cy = [Inches(4.4), Inches(3.25)]
+            rows_per_table = 8 # use font 14
+            font_size = 14
+        elif page_elements == '6':
+            x1, x2, x3, x4, x5, x6 = [Inches(0.5), Inches(3.6), Inches(6.7), Inches(0.5), Inches(3.6), Inches(6.7)]
+            if pp_title:   # slide title, move element down 1 inches, height -1 Inc
+                y1, y2, y3, y4, y5, y6 = [Inches(1.5), Inches(1.5), Inches(1.5), Inches(4.4), Inches(4.4), Inches(4.4)]
+                cx, cy = [Inches(3.0), Inches(2.8)]
+            else:
+                y1, y2, y3, y4, y5, y6 = [Inches(0.5), Inches(0.5), Inches(0.5), Inches(4.0), Inches(4.0), Inches(4.0)]
+                cx, cy = [Inches(3.0), Inches(2.8)]
+            rows_per_table = 8
+            font_size = 12
+        else:
+            _logger.debug('Unknown element count')
+
+        # element coordinates
+        if page_elements == '1':
+            x = x1
+            y = y1
+        elif page_elements == '2':
+            if element_written == 1:
+                x = x1
+                y = y1
+            elif element_written == 2:
+                x = x2
+                y = y2
+        elif page_elements == '4':
+            if element_written == 1:
+                x = x1
+                y = y1
+            elif element_written == 2:
+                x = x2
+                y = y2
+            elif element_written == 3:
+                x = x3
+                y = y3
+            elif element_written == 4:
+                x = x4
+                y = y4
+        elif page_elements == '6':
+            if element_written == 1:
+                x = x1
+                y = y1
+            elif element_written == 2:
+                x = x2
+                y = y2
+            elif element_written == 3:
+                x = x3
+                y = y3
+            elif element_written == 4:
+                x = x4
+                y = y4
+            elif element_written == 5:
+                x = x5
+                y = y5
+            elif element_written == 6:
+                x = x6
+                y = y6
+        if element_written == int(page_elements):
+            element_written = 0
+        return element_written, rows_per_table, font_size, x, y, cx, cy
+
     @api.model
     def _cron_execute_report(self):
         _process_reports = self.env.cr.execute("""SELECT * FROM rocker_report
@@ -462,7 +1166,7 @@ class Report(models.Model):
         for _report in _records:
             self = self.env['rocker.report'].search([('id', '=', _report[0])])
             _logger.info('Cron execute report: ' + self.name)
-            self.export_xls()
+            self.export_report()
 
         _logger.debug('Nothing to do...boooring!')
 
@@ -470,15 +1174,113 @@ class Report(models.Model):
     def _execute_xls(self, context=None):
         report_id = dict(self._context.get('params', {})).get('id')
         self = self.env['rocker.report'].search([('id', '=', report_id)])
-        self.export_xls()
+        self.export_report()
         _logger.debug('Base url: ' + self.env['ir.config_parameter'].sudo().get_param('web.base.url'))
         return {
             'type': 'ir.actions.act_url',
-            'name': 'excel',
-            'url': '/web/content/rocker.report/%s/excel_report/%s?download=true' % (self.id, self.file_name)
+            'name': 'report',
+            'url': '/web/content/rocker.report/%s/report/%s?download=true' % (self.id, self.file_name)
         }
 
-    def show_about(self):
+    @api.model
+    def _testexcel(self):
+        _logger.debug('Starting test')
+        mytmpdir = os.environ['TEMP']  # Must be uppercas
+        filename = "test_report.xlsx"
+        template_filename = "test_template.xlsx"
+        try:
+            os.remove(os.path.join(mytmpdir, filename))
+        except:
+            _logger.debug('Test_report does not exist')
+        try:
+            os.remove(os.path.join(mytmpdir, template_filename))
+        except:
+            _logger.debug('Test_template does not exist')
+        try:
+            _logger.debug('Pythoncom')
+            pythoncom.CoInitialize()
+            # first we create empty excel and store that to template field
+            _logger.debug('win32.gencache.Ensuredispatch')
+            try:
+                excel = win32.gencache.EnsureDispatch('Excel.Application')
+            except AttributeError:
+                # Remove cache and try again.
+                MODULE_LIST = [m.__name__ for m in sys.modules.values()]
+                for module in MODULE_LIST:
+                    if re.match(r'win32com\.gen_py\..+', module):
+                        del sys.modules[module]
+                try:
+                    shutil.rmtree(os.path.join(os.environ.get('LOCALAPPDATA'), 'Temp', 'gen_py'))  # original, and when running as a odoo service
+                    shutil.rmtree(os.path.join(os.environ['TEMP'], 'gen_py'))
+                except:
+                    _logger.error('gen_py remove error')
+                #from win32com import client
+                excel = win32.gencache.EnsureDispatch('Excel.Application')
+            except:
+                _logger.error("EnsureDispatch ('Excel.Application'). You may need to restart server")
+                return False
+
+            excel.DisplayAlerts = False  # disable overwrite warning
+            wb = excel.Workbooks.Add()
+            sheet = wb.Worksheets(1)
+            sheet.Name = "Data"
+            sheet.Range("A1").Value = "This is a template!"
+            _logger.debug('Save as ' + os.path.join(mytmpdir, template_filename) )
+            wb.SaveAs(os.path.join(mytmpdir, template_filename))
+            wb.Close()
+            #
+            excel.Application.Quit()
+            # now we open that as template
+            try:
+                excel = win32.gencache.EnsureDispatch('Excel.Application')
+            except AttributeError:
+                 # Remove cache and try again.
+                MODULE_LIST = [m.__name__ for m in sys.modules.values()]
+                for module in MODULE_LIST:
+                    if re.match(r'win32com\.gen_py\..+', module):
+                        del sys.modules[module]
+                try:
+                    shutil.rmtree(os.path.join(os.environ.get('LOCALAPPDATA'), 'Temp', 'gen_py'))  # original, and when running as a odoo service
+                    shutil.rmtree(os.path.join(os.environ['TEMP'], 'gen_py'))
+                except:
+                    _logger.error('gen_py remove error')
+                #from win32com import client
+                excel = win32.gencache.EnsureDispatch('Excel.Application')
+            except:
+                _logger.error("EnsureDispatch ('Excel.Application'). You may need to restart server")
+                return False
+                excel.DisplayAlerts = False  # disable overwrite warning
+            wb = excel.Workbooks.Open(os.path.join(mytmpdir, template_filename))
+            sheet = wb.Worksheets("Data")
+            sheet.Range("A2").Value = "Added some data"
+            sheet.Range("B2").Value = "Added some data"
+            sheet.ListObjects.Add(1, sheet.Range(sheet.Cells(2, 1), sheet.Cells(2, 2))).Name = "DataTest"
+            wb.SaveAs(os.path.join(mytmpdir, filename))
+            wb.Close()
+            _logger.debug('Excel quit')
+            excel.Application.Quit()
+        except Exception as e:
+            raise exceptions.ValidationError(
+                'Excel test\n\nTried to create files to: ' + mytmpdir + '\n\nCheck folder access rights\n\n' + str(e))
+        context = {}
+        context['message'] = "Excel worksheet creation seems to work!\nGenerated Excels in " + mytmpdir
+        title = 'Success'
+        view = self.env.ref('rocker_app.rocker_popup_wizard')
+        view_id = False
+        return {
+            'name': title,
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'rocker.popup.wizard',
+            'views': [(view.id, 'form')],
+            'view_id': view.id,
+            'target': 'new',
+            'context': context,
+        }
+
+    @api.model
+    def _show_about(self):
         _logger.debug('Open About ')
         context = {}
         context['message'] = "Rocker Reporting is nice"
@@ -496,3 +1298,4 @@ class Report(models.Model):
             'target': 'new',
             'context': context,
         }
+
