@@ -23,7 +23,7 @@ from odoo import exceptions
 from odoo import http
 import logging
 import tempfile
-from datetime import datetime
+from datetime import date, datetime, timedelta
 import win32com.client as win32
 from win32com.client import constants
 import pythoncom
@@ -45,14 +45,14 @@ _logger = logging.getLogger(__name__)
 # _logger.warning('A WARNING message')
 # _logger.error('An ERROR message')
 # --log_level=:DEBUG
-#class rocker_report_collection(models.Model):
-#    _name = 'rocker.report.collection'
-#    _description = 'Rocker Collection Reports'
-#    _order = 'sequence'
-#    report_id = fields.Integer('Report_id')
-#    collection_id = fields.Integer('Collection_id')
-#    name = fields.Char('Name')
-#    sequence = fields.Integer('sequence', help="Sequence for the handle.",default=10)
+class rocker_report_collection(models.Model):
+    _name = 'rocker.report.collection'
+    _description = 'Rocker Collection Reports'
+    _order = 'sequence'
+    report_id = fields.Integer('Report_id')
+    collection_id = fields.Integer('Collection_id')
+    name = fields.Char('Name')
+    sequence = fields.Integer('sequence', help="Sequence for the handle.",default=10)
 
 
 
@@ -96,12 +96,12 @@ class Report(models.Model):
     interval_number = fields.Integer(String="Interval", default=1)
     execute_at = fields.Float(String="Execute at (timezone=UTC)")
     firstcall = fields.Date(String='First Execution')
+    nextcall = fields.Datetime(String='Next Execution')
     interval_type = fields.Selection(
         [('min', 'min'), ('hour', 'hour'), ('day', 'day'), ('month', 'month')], 'Execute report every', default='day')
     company_id = fields.Many2one('res.company', string='User belonging this company hierarchy can view report')
     _sqldriver = False
     #
-    # new version 2.0
     report_application = fields.Selection([('excel', 'Excel Report'), ('powerpoint', 'PowerPoint Report')], 'Report App', default='excel', required=True)
     element = fields.Selection([('table', 'Table'), ('chart', 'Chart')], 'Element type', default='table', required=False)
     legend = fields.Selection([('none', 'None'), ('bottom', 'Bottom'), ('right', 'Right')], 'Legend', default='bottom', required=False)
@@ -187,9 +187,15 @@ class Report(models.Model):
         ('72','Scatter with Smoothed Lines'),
         ('73','Scatter with Smoothed Lines and No Data Markers'),
         ], 'Chart type', required=False)
+        # email
+    send_by_email = fields.Boolean('Send by Email', default=False)
+    email_subject = fields.Char('Subject', default='Rocker Report Notification: [NAME], [DATE]')
+    email_to = fields.Char('Email To')
+    email_body = fields.Text('Message Body', default='[FILENAME] has been executed at [DATETIME]<p>Cheers<br/>Rocker')
 
 
-    # @api.multi # odoo 13 does not use these
+
+# @api.multi # odoo 13 does not use these
     # multi, otherwise no excels
     def export_report(self, context=None):
         if self.active != True:
@@ -1149,22 +1155,143 @@ class Report(models.Model):
 
     @api.model
     def _cron_execute_report(self):
-        _process_reports = self.env.cr.execute("""SELECT * FROM rocker_report
-                                            WHERE active = True
-                                            AND schedule_onoff = True
-                                            AND COALESCE(firstcall, CURRENT_DATE - 1)::date <= current_date::date
-                                            AND to_timestamp(COALESCE(execute_at,0) * 60 * 60)::time <= current_time::time
-                                            AND (CASE WHEN interval_type = 'min' THEN COALESCE(date_executed, CURRENT_DATE - 3650) + interval_number * interval '1' minute
-			   WHEN interval_type = 'hour' THEN COALESCE(date_executed, CURRENT_DATE - 3650) + interval_number * interval '1' hour
-			   WHEN interval_type = 'day' THEN COALESCE(date_executed, CURRENT_DATE - 3650) + interval_number * interval '1' day
-			   WHEN interval_type = 'month' THEN COALESCE(date_executed, CURRENT_DATE - 3650) + interval_number * interval '1' month
-			ELSE now() END) <= now()
-                                            """)
+        #                                    """)
+        _process_reports = self.env.cr.execute(""" SELECT * FROM rocker_report
+                     WHERE active = True
+                     AND schedule_onoff = True
+                     AND  COALESCE(nextcall, firstcall + to_timestamp(COALESCE(execute_at,0) * 60 * 60)::time )  at time zone 'UTC' <= now()
+                     """)
         _records = self.env.cr.fetchall()
         for _report in _records:
             self = self.env['rocker.report'].search([('id', '=', _report[0])])
             _logger.info('Cron execute report: ' + self.name)
             self.export_report()
+
+            # email
+            if self.send_by_email == True:
+                subject = self.email_subject.strip()
+                recipients = self.email_to.strip()
+                body = self.email_body.strip()
+                subject = subject.replace('[NAME]',self.name.strip())
+                subject = subject.replace('[FILENAME]',self.file_name.strip())
+                subject = subject.replace('[DATE]',str(date.today()))
+                subject = subject.replace('[DATETIME]',datetime.now().strftime("%Y-%m-%d, %H:%M"))
+                body = body.replace('[NAME]',self.name.strip())
+                body = body.replace('[FILENAME]',self.file_name.strip())
+                body = body.replace('[DATE]',str(date.today()))
+                body = body.replace('[DATETIME]',datetime.now().strftime("%Y-%m-%d, %H:%M"))
+
+                recipients = ''
+                #recipients = 'antti.karki@outlook.com'
+                recipients = self.email_to.strip()
+
+                #subject = 'test'
+                #body = 'test'
+                #sender = 'Rocker Reporting'  # email server settings
+                # now the sender is OdooBot
+                template_obj = self.env['mail.mail']
+                #template_data = {
+                #    'subject': 'Rocker Report Notification: ' + self.name + ' is ready',
+                #    'body_html': message_body,
+                #    'email_from': sender,
+                #    'email_to': ", ".join(recipients),
+                #}
+                template_data = {
+                    'subject': subject,
+                    'body_html': body,
+                    'email_to': recipients,
+                    'auto_delete': True,
+                }
+                template_id = template_obj.create(template_data)
+                attach_obj = self.env['ir.attachment']
+                attachment_ids = []
+                # filename & datas_fname only for Odoo 12
+                #attach_data = {
+                #    'name': self.file_name,
+                #    'filename': self.file_name,
+                #    'datas': self.report,
+                #    'datas_fname': self.file_name,
+                #    'res_model': 'ir.ui.view',
+                #}
+                attach_data = {
+                    'name': self.file_name,
+                    'datas': self.report,
+                    'res_model': 'ir.ui.view',
+                }
+                attach_id = attach_obj.create(attach_data)
+                attachment_ids.append(attach_id.id)
+                if attachment_ids:
+                    template_id.write({'attachment_ids': [(6, 0, attachment_ids)]})
+
+                _logger.debug('Subject ' + subject)
+                _logger.debug('Email To ' + recipients)
+                _logger.debug('Body ' + body)
+
+                template_id.send()
+
+            # define next run for the report
+            if self.interval_type == 'min':
+                _logger.debug('Minute Intervall')
+                nextd = datetime.now()
+                next = datetime.now().strftime("%Y-%m-%d, %H:%M")
+                _logger.debug('Executed at: ' + next)
+                nextd = datetime.now() + timedelta(minutes=self.interval_number)
+                next = nextd.strftime("%Y-%m-%d, %H:%M")
+                _logger.debug('Next Execution at: ' + next)
+                self.nextcall = nextd
+            elif self.interval_type == 'hour':
+                _logger.debug('Hour Intervall')
+                nextd = datetime.now()
+                next = datetime.now().strftime("%Y-%m-%d, %H:%M")
+                _logger.debug('Executed at: ' + next)
+                nextd = datetime.now() + timedelta(hours=self.interval_number)
+                nextd = nextd.replace(minute=0, second=0)
+                next = nextd.strftime("%Y-%m-%d, %H:%M")
+                # take minutes from execute_at field, we don't want to flush exec time
+                minutes = self.execute_at * 60
+                hours, minutes = divmod(minutes, 60)
+                nextd = nextd + timedelta(minutes=minutes)
+                next = nextd.strftime("%Y-%m-%d, %H:%M")
+                _logger.debug('Next Execution at: ' + next)
+                self.nextcall = nextd
+
+            elif self.interval_type == 'day':
+                _logger.debug('Define Day Intervall')
+                nextd = datetime.now()
+                next = datetime.now().strftime("%Y-%m-%d, %H:%M")
+                _logger.debug('Executed at: ' + next)
+                nextd = datetime.now() + timedelta(days=self.interval_number)
+                nextd = nextd.replace(hour=0, minute=0, second=0)
+                next = nextd.strftime("%Y-%m-%d, %H:%M")
+                # take minutes from execute_at field, we don't want to flush exec time
+                minutes = self.execute_at * 60
+                hours, minutes = divmod(minutes, 60)
+                nextd = nextd + timedelta(hours=hours)
+                nextd = nextd + timedelta(minutes=minutes)
+                next = nextd.strftime("%Y-%m-%d, %H:%M")
+                _logger.debug('Next Execution at: ' + next)
+                self.nextcall = nextd
+
+            elif self.interval_type == 'month':
+                _logger.debug('Define Month Intervall')
+                nextd = datetime.now()
+                next = datetime.now().strftime("%Y-%m-%d, %H:%M")
+                _logger.debug('Executed at: ' + next)
+                from dateutil.relativedelta import relativedelta
+                nextd = datetime.now() + relativedelta(months=self.interval_number)
+                nextd = nextd.replace(hour=0, minute=0, second=0)
+                next = nextd.strftime("%Y-%m-%d, %H:%M")
+                # take minutes from execute_at field, we don't want to flush exec time
+                minutes = self.execute_at * 60
+                hours, minutes = divmod(minutes, 60)
+                nextd = nextd + timedelta(hours=hours)
+                nextd = nextd + timedelta(minutes=minutes)
+                next = nextd.strftime("%Y-%m-%d, %H:%M")
+                _logger.debug('Next Execution at: ' + next)
+                self.nextcall = nextd
+
+            else:
+                _logger.debug('Unknown intervall')
 
         _logger.debug('Nothing to do...boooring!')
 

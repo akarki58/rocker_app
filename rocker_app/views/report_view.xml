@@ -35,7 +35,7 @@
                            colspan="6" options="{'no_show':True,'no_create':True,'no_open':True}">
                         <tree string="Reports" editable="bottom" >
                             <field name="sequence" widget="handle"/>
-                            <!--field name="id" readonly="1"/-->
+                            <!--field name="sequence" ref="rocker_report_collection.sequence"/-->
                             <field name="name" readonly="1"/>
                             <field name="report_application" readonly="1" invisible="1"/>
                             <field name="description" readonly="1"/>
@@ -82,18 +82,21 @@
                     <group col="3">
                             <field name="schedule_onoff" /><p></p>
                             <label for="interval_number" string="Execute Every" />
-                            <div>
-                                <field name="interval_number" class="oe_inline" default="10"/>
-                                <field name="interval_type" class="oe_inline" default="minutes"/><p></p>
-                            </div>
-                        <field name="execute_at" widget="float_time" /><p>Enter time in UTC timezone </p>
-                                 <label for="firstcall" string="First Execution" />
-                            <div>
-                                <field name="firstcall"  />
-                            </div>
-
-
+                        <div>
+                            <field name="interval_number" style="width: 10%%; margin-right: 10px;" class="oe_inline" default="10" />
+                            <field name="interval_type" class="oe_inline" default="min"/><p></p>
+                        </div>
+                            <field name="execute_at" widget="float_time"  style="width: 10%%"/><p></p>
+                            <!--label for="firstcall" string="First Execution" /-->
+                            <field name="firstcall" style="width: 40%%"  />
+                            <field name="nextcall"  readonly="1"  />
                     </group>
+                <group col="2">
+                    <field name="send_by_email" attrs="{'invisible':[('schedule_onoff', '=', False) ]}"/>
+                    <field name="email_subject" attrs="{'invisible':['|',('send_by_email', '=', False), ('schedule_onoff', '=', False) ]}"/>
+                    <field name="email_to" attrs="{'invisible':['|',('send_by_email', '=', False), ('schedule_onoff', '=', False) ]}"/>
+                    <field name="email_body" attrs="{'invisible':['|',('send_by_email', '=', False), ('schedule_onoff', '=', False) ]}"/>
+                </group>
             </page>
             <page string="Access rights">
                 <group col="2">
