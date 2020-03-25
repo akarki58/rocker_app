@@ -36,27 +36,32 @@
               name="Reports"
               action="action_rocker_report"
               parent="rocker_menu"
+              sequence="10"
     />
     <menuitem id="menu_rocker_archive"
               name="Report Archive"
               action="action_rocker_archive"
               parent="rocker_menu"
+              sequence="20"
     />
     <menuitem id="menu_rocker_database"
               name="Databases"
               action="action_rocker_database"
               parent="rocker_menu"
+              sequence="30"
     />
 
     <menuitem id="menu_rocker_executor"
               name="Executor"
               action="rocker_executor_act"
               parent="rocker_menu"
+              sequence="40"
     />
 
     <menuitem id="menu_rocker_help"
           name="Help"
           parent="rocker_menu"
+          sequence="50"
     />
 
    <record id="action_rocker_about_prog" model="ir.actions.server">
@@ -83,12 +88,14 @@
         name="About Rocker Reporting..."
         action="action_rocker_about_prog"
         parent="menu_rocker_help"
+        sequence="10"
     />
 
     <menuitem id="menu_rocker_testexcel"
         name="Test Excel creation"
         action="action_test_excel"
         parent="menu_rocker_help"
+        sequence="20"
     />
 
 </odoo>

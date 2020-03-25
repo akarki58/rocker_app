@@ -5,7 +5,7 @@
  'depends': ['base','web'],
  'license': 'AGPL-3',
  'category': 'Extra Tools',
- 'version': '12.0.2.0.0',
+ 'version': '12.0.2.1.0',
  'data': [
     'views/database_view.xml',
     'views/archive_view.xml',

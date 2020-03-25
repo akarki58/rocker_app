@@ -28,7 +28,7 @@
       <field name="name">archive.tree</field>
       <field name="model">rocker.archive</field>
       <field name="arch" type="xml">
-        <tree>
+        <tree  create="false">
          <field name="name" readonly="1"/>
          <field name="date_executed" readonly="1"/>
          <field name="file_name" readonly="1"/>
