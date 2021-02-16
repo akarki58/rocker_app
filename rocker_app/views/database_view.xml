@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="view_form_rocker_database" model="ir.ui.view">
             <field name="name">rocker.database</field>
@@ -12,7 +12,7 @@
                         <field name="name"/>
                         <field name="driver"/>
                         <field name="host"/>
-                        <field name="port"/>
+                        <field name="port" attrs="{'invisible':[('driver', 'in',('sqlserver','odbc'))]}"/>
                         <field name="odbcdriver" placeholder="example: SQL Server" attrs="{'invisible':[('driver', 'not in',('sqlserver','odbc'))]}"/>
                         <field name="database"/>
                         <field name="user"/>

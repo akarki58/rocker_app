@@ -45,14 +45,14 @@ _logger = logging.getLogger(__name__)
 # _logger.warning('A WARNING message')
 # _logger.error('An ERROR message')
 # --log_level=:DEBUG
-#class rocker_report_collection(models.Model):
-#    _name = 'rocker.report.collection'
-#    _description = 'Rocker Collection Reports'
-#    _order = 'sequence'
-#    report_id = fields.Integer('Report_id')
-#    collection_id = fields.Integer('Collection_id')
-#    name = fields.Char('Name')
-#    sequence = fields.Integer('sequence', help="Sequence for the handle.",default=10)
+class rocker_report_collection(models.Model):
+    _name = 'rocker.report.collection'
+    _description = 'Rocker Collection Reports'
+    _order = 'sequence'
+    report_id = fields.Integer('Report_id')
+    collection_id = fields.Integer('Collection_id')
+    name = fields.Char('Name')
+    sequence = fields.Integer('sequence', help="Sequence for the handle.",default=10)
 
 
 
@@ -93,16 +93,15 @@ class Report(models.Model):
     template_name = fields.Char('Template Filename', size=64, help="")
     perma_link = fields.Char('Permanent link to latest')
     execute_link = fields.Char('Execute & download link')
-    interval_number = fields.Integer(String="Interval", default=1)
-    execute_at = fields.Float(String="Execute at (timezone=UTC)")
-    firstcall = fields.Date(String='First Execution')
-    nextcall = fields.Datetime(String='Next Execution')
+    interval_number = fields.Integer("Interval", default=1)
+    execute_at = fields.Float("Execute at (timezone=UTC)")
+    firstcall = fields.Date('First Execution')
+    nextcall = fields.Datetime('Next Execution')
     interval_type = fields.Selection(
         [('min', 'min'), ('hour', 'hour'), ('day', 'day'), ('month', 'month')], 'Execute report every', default='day')
     company_id = fields.Many2one('res.company', string='User belonging this company hierarchy can view report')
     _sqldriver = False
     #
-    # new version 2.0
     report_application = fields.Selection([('excel', 'Excel Report'), ('powerpoint', 'PowerPoint Report')], 'Report App', default='excel', required=True)
     element = fields.Selection([('table', 'Table'), ('chart', 'Chart')], 'Element type', default='table', required=False)
     legend = fields.Selection([('none', 'None'), ('bottom', 'Bottom'), ('right', 'Right')], 'Legend', default='bottom', required=False)
@@ -195,7 +194,8 @@ class Report(models.Model):
     email_body = fields.Text('Message Body', default='[FILENAME] has been executed at [DATETIME]<p>Cheers<br/>Rocker')
 
 
-    @api.multi # odoo 13 does not use these
+
+    # @api.multi # odoo 13 does not use these
     # multi, otherwise no excels
     def export_report(self, context=None):
         if self.active != True:
@@ -215,7 +215,6 @@ class Report(models.Model):
                 'url': '/web/content/rocker.report/%s/report/%s?download=true' % (self.id, self.file_name),
             }
 
-    @api.multi # odoo 13 does not use these
     def export_ppt(self, context=None):
         from pptx import Presentation
         from pptx.chart.data import CategoryChartData
@@ -403,7 +402,6 @@ class Report(models.Model):
 
         return True
 
-    @api.multi # odoo 13 does not use these
     def export_xls(self, context=None):
         filename = ''
         if not self.file_name:
@@ -427,24 +425,11 @@ class Report(models.Model):
             os.unlink(os.path.join(mytmpdir, template_filename))
         except:
             _logger.debug('Template does not exist in TEMP')
-        pythoncom.CoInitialize()
         try:
+            pythoncom.CoInitialize()
             excel = win32.gencache.EnsureDispatch('Excel.Application')
-        except AttributeError:
-            # Remove cache and try again.
-            MODULE_LIST = [m.__name__ for m in sys.modules.values()]
-            for module in MODULE_LIST:
-                if re.match(r'win32com\.gen_py\..+', module):
-                    del sys.modules[module]
-            try:
-                shutil.rmtree(os.path.join(os.environ.get('LOCALAPPDATA'), 'Temp', 'gen_py'))  # original, and when running as a odoo service
-                shutil.rmtree(os.path.join(os.environ['TEMP'], 'gen_py'))
-            except:
-                _logger.error('gen_py remove error')
-            #from win32com import client
-            excel = win32.gencache.EnsureDispatch('Excel.Application')
-        except:
-            _logger.error("EnsureDispatch ('Excel.Application'). You may need to restart server")
+        except Exception as e:
+            raise exceptions.ValidationError("Can't start Excel\n\n" + str(e))
             return False
         excel.DisplayAlerts = False  # disable overwrite warning
         mytmpdir = os.environ['TEMP']  # Must be uppercas
@@ -1184,7 +1169,6 @@ class Report(models.Model):
                 body = body.replace('[DATETIME]',datetime.now().strftime("%Y-%m-%d, %H:%M"))
 
                 recipients = ''
-                #recipients = 'antti.karki@outlook.com'
                 recipients = self.email_to.strip()
 
                 #sender = 'Rocker Reporting'  # email server settings
@@ -1199,24 +1183,20 @@ class Report(models.Model):
                 template_id = template_obj.create(template_data)
                 attach_obj = self.env['ir.attachment']
                 attachment_ids = []
-                #attach_data = {
-                #    'name': self.file_name,
-                #    'filename': self.file_name,
-                #    'datas': self.report,
-                #    'datas_fname': self.file_name,
-                #    'res_model': 'ir.ui.view',
-                #    'mimetype': 'application/octet-stream',
-                #    'id':0
-                #}
+                # filename & datas_fname only for Odoo 12
                 attach_data = {
-                    'name': self.file_name,
-                    'filename': self.file_name,
-                    'datas': self.report,
-                    'datas_fname': self.file_name,
-                    'res_model': 'ir.ui.view',
+                   'name': self.file_name,
+                   'filename': self.file_name,
+                   'datas': self.report,
+                   'datas_fname': self.file_name,
+                   'res_model': 'ir.ui.view',
                 }
-
-                attach_id = attach_obj.create(attach_data)
+                # attach_data = {
+                #     'name': self.file_name,
+                #     'datas': self.report,
+                #     'res_model': 'ir.ui.view',
+                # }
+                # attach_id = attach_obj.create(attach_data)
                 attachment_ids.append(attach_id.id)
                 if attachment_ids:
                     template_id.write({'attachment_ids': [(6, 0, attachment_ids)]})
@@ -1324,25 +1304,7 @@ class Report(models.Model):
             pythoncom.CoInitialize()
             # first we create empty excel and store that to template field
             _logger.debug('win32.gencache.Ensuredispatch')
-            try:
-                excel = win32.gencache.EnsureDispatch('Excel.Application')
-            except AttributeError:
-                # Remove cache and try again.
-                MODULE_LIST = [m.__name__ for m in sys.modules.values()]
-                for module in MODULE_LIST:
-                    if re.match(r'win32com\.gen_py\..+', module):
-                        del sys.modules[module]
-                try:
-                    shutil.rmtree(os.path.join(os.environ.get('LOCALAPPDATA'), 'Temp', 'gen_py'))  # original, and when running as a odoo service
-                    shutil.rmtree(os.path.join(os.environ['TEMP'], 'gen_py'))
-                except:
-                    _logger.error('gen_py remove error')
-                #from win32com import client
-                excel = win32.gencache.EnsureDispatch('Excel.Application')
-            except:
-                _logger.error("EnsureDispatch ('Excel.Application'). You may need to restart server")
-                return False
-
+            excel = win32.gencache.EnsureDispatch('Excel.Application')
             excel.DisplayAlerts = False  # disable overwrite warning
             wb = excel.Workbooks.Add()
             sheet = wb.Worksheets(1)
@@ -1354,25 +1316,8 @@ class Report(models.Model):
             #
             excel.Application.Quit()
             # now we open that as template
-            try:
-                excel = win32.gencache.EnsureDispatch('Excel.Application')
-            except AttributeError:
-                 # Remove cache and try again.
-                MODULE_LIST = [m.__name__ for m in sys.modules.values()]
-                for module in MODULE_LIST:
-                    if re.match(r'win32com\.gen_py\..+', module):
-                        del sys.modules[module]
-                try:
-                    shutil.rmtree(os.path.join(os.environ.get('LOCALAPPDATA'), 'Temp', 'gen_py'))  # original, and when running as a odoo service
-                    shutil.rmtree(os.path.join(os.environ['TEMP'], 'gen_py'))
-                except:
-                    _logger.error('gen_py remove error')
-                #from win32com import client
-                excel = win32.gencache.EnsureDispatch('Excel.Application')
-            except:
-                _logger.error("EnsureDispatch ('Excel.Application'). You may need to restart server")
-                return False
-                excel.DisplayAlerts = False  # disable overwrite warning
+            excel = win32.gencache.EnsureDispatch('Excel.Application')
+            excel.DisplayAlerts = False  # disable overwrite warning
             wb = excel.Workbooks.Open(os.path.join(mytmpdir, template_filename))
             sheet = wb.Worksheets("Data")
             sheet.Range("A2").Value = "Added some data"
@@ -1383,10 +1328,10 @@ class Report(models.Model):
             _logger.debug('Excel quit')
             excel.Application.Quit()
         except Exception as e:
-            raise exceptions.ValidationError(
-                'Excel test\n\nTried to create files to: ' + mytmpdir + '\n\nCheck folder access rights\n\n' + str(e))
+            raise exceptions.ValidationError('Excel test\n\n' + str(e))
+
         context = {}
-        context['message'] = "Excel worksheet creation seems to work!\nGenerated Excels in " + mytmpdir
+        context['message'] = "Excel worksheet creation seems to work!\nIn this test generated Excels in " + mytmpdir
         title = 'Success'
         view = self.env.ref('rocker_app.rocker_popup_wizard')
         view_id = False
@@ -1402,23 +1347,4 @@ class Report(models.Model):
             'context': context,
         }
 
-    @api.model
-    def _show_about(self):
-        _logger.debug('Open About ')
-        context = {}
-        context['message'] = "Rocker Reporting is nice"
-        title = 'About Rocker Reporting'
-        view = self.env.ref('rocker_app.rocker_about')
-        view_id = self.env.ref('rocker_app.rocker_about').id
-        return {
-            'name': title,
-            'type': 'ir.actions.act_window',
-            'view_type': 'form',
-            'view_mode': 'form',
-            'res_model': 'rocker.about',
-            'views': [(view.id, 'form')],
-            'view_id': view.id,
-            'target': 'new',
-            'context': context,
-        }
 

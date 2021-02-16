@@ -3,122 +3,106 @@
 
 <head>
     <meta charset="utf-8"/>
-    <title>Odoo Rocker Reporting V2</title>
+    <title>Odoo Rocker Reporting</title>
 
 </head>
 <body>
 <div class="container">
     <h1>Rocker Reporting Application</h1>
-    <h2>for Odoo 12.0 & Odoo 13.0</h2>
-    Collect data to Excel or Powerpoint from various data sources, Present business data with Powerpoint graphs. Or use Excel templates to present business graphs. Combine data
-    with Excel Power Pivot. Get data from Odoo & external PostgreSQL, SQLServer, MySQL, MariaDB, ODBC or Oracle databases. Send reports by email.
-    <p>
-    <h2>Requirements:</h2>
-    <ol>
-        <li>Odoo 12 or Odoo 13 installed on Windows platform</li>
-        <li>Excel 32-bit installed on server</li>
-        <li>Win32Com installed on server</li>
-        <li>Datasource drivers (PostgreSQL, SQLServer, Oracle, MySQL, MariaDB etc.) installed on server based on your
-            needs
-        </li
-        <li>For Powerpoints python-pptx installed on server</li>
-    </ol>
+    <h2>for Odoo 12.0 / Odoo 13.0 / Odoo 14.0</h2>
+    Collect data to single Excel from various data sources, Use Excel templates to present business graphs. Combine data
+    with Excel Power Pivot. Get data from Odoo & external PostgreSQL, SQLServer, MySQL, MariaDB, ODBC or Oracle databases.
     <p>
     <h2>News/Notes:</h2>
     <ul>
-        <li><b>25.3.2020</b>
-        <p>
-        Send reports by Email. 
-        When scheduled report is ready then it can be sent by email. Also fixed some scheduler issues.
-        </p>
-        </li>
-       <li><b>19.3.2020</b>
-        <p>
-        With V2 you can create Powerpoints. 
-        Download newest version, install python-pptx on the server and that's it! 
-        Watch the demo: <strong><a href="https://www.youtube.com/watch?v=xGtZNKU_WaI">Powerpoint demo on Youtube</a></strong>
-        </p>
-        </li>
-        <li><b>24.2.2020</b><p>Did you create nice report that takes data from Odoo or other well known Application?<br>
-            Why don't you share it with others. Upload your Excel template, SQL & screendump to
-            <b><a href="https://github.com/akarki58/rocker_templates">Rocker_Templates repository</a></b></p>
-            <p>Author contact: antti.rocker.karki@outlook.com</p>
+        <li><b>15.2.2021</b>
+        <p>At the moment we have a problem starting Excel if Odoo runs as a service.<br>
+            Everything works well if you start Odoo from command prompt. See install guide in docs folder.<p>
+            If someone knows the solution to: excel = win32.gencache.EnsureDispatch('Excel.Application') causing 
+            (-2147023584, 'A specified logon session does not exist. It may already have been terminated.', None, None) error, pls email.<p>
+            Openpyxl version <a href="https://apps.odoo.com/apps/modules/14.0/rocker_app_v3/">https://apps.odoo.com/apps/modules/14.0/rocker_app_v3/</a> 
+            does not have a problem but this one supports all Excel 2016 features including Power Pivot</p>
+        <p>Author contact: antti.rocker.karki@outlook.com</p>
         </li>
     </ul>
     <p>
+    <h2>Requirements:</h2>
+    <ol>
+        <li>Odoo 12 or Odoo 13 or Odoo 14 installed on Windows platform</li>
+        <li>Excel installed on server</li>
+        <li>Datasource drivers (PostgreSQL, SQLServer, Oracle, MySQL, MariaDB etc.) installed on server based on your
+            needs
+        </li>
+    </ol>
     <h2>Examples:</h2>
     <ol>
         <li>
-            <strong>Powerpoints: Powerpoint table slide</strong><br><br>
-            <img class="img-fluid" src="Table.png"/>
-        </li>
-        <br>
-        <li>
-            <strong>Powerpoints: Powerpoint Column Chart slide</strong><br><br>
-            <img class="img-fluid" src="ColumnChart.png"/>
-        </li>
-        <br>
-        <li>
-            <strong>Powerpoints: Powerpoint Pie Chart slide</strong><br><br>
-            <img class="img-fluid" src="Pie.png"/>
-        </li>
-        <br>
-        <li>
-            <strong>Powerpoints: Powerpoint Collection</strong><br><br>
-            <img class="img-fluid" src="Collection.png"/>
-        </li>
-        <br>
-        <li>
-            <strong>Rocker Excel example: Data from single datasource</strong><br><br>
+            <strong>Rocker example: Data from single datasource</strong><br><br>
             <img class="img-fluid" src="RockerUI.png"/>
         </li>
         <br>
         <li>
-            <strong>Rocker Excel example: Collection reports, data from many datasources</strong><br><br>
+            <strong>Rocker example: Collection reports, data from many datasources</strong><br><br>
             <img class="img-fluid" src="RockerUI2.png"/>
         </li>
     </ol>
     <h2>Guides:</h2>
     <ol>
         <li>
-            <strong><a href="Rocker_Email_User_Guide.pptx" target="_blank">Email User Guide</a></strong>
-        </li>
-       <li>
-            <strong><a href="Rocker_PowerPoint_User_Guide.pptx" target="_blank">Powerpoint User Guide</a></strong>
-        </li>
-        <li>
-            <strong><a href="Rocker_install.pptx" target="_blank">Install Guide</a></strong>
+            <strong><a href="Rocker_install.pptx" target="_blank">Install guide</a></strong>
         </li>
     </ol>
     </ol>
     <h2>Demos:</h2>
     <ol>
         <li>
-            <strong><a href="https://www.youtube.com/watch?v=xGtZNKU_WaI">View Powerpoint demo</a></strong><br><br>
+            <strong><a href="https://www.youtube.com/watch?v=ctxz7aIIFaA">View Basic demo</a></strong><br><br>
+            <iframe width="806" height="453" src="https://www.youtube.com/embed/ctxz7aIIFaA" frameborder="0"
+                    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen></iframe>
+
         </li>
         <br>
         <li>
-            <strong><a href="https://www.youtube.com/watch?v=ctxz7aIIFaA">View Basic demo</a></strong><br><br>
+            <strong><a href="https://www.youtube.com/watch?v=xGtZNKU_WaI">PowerPoints demo</a></strong><br><br>
+            <iframe width="806" height="453" src="https://www.youtube.com/embed/xGtZNKU_WaI" frameborder="0"
+                    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen></iframe>
         </li>
         <br>
         <li>
             <strong><a href="https://www.youtube.com/watch?v=4rycsBdr9B4">Get data from SQLServer demo</a></strong><br><br>
+            <iframe width="806" height="453" src="https://www.youtube.com/embed/4rycsBdr9B4" frameborder="0"
+                    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen></iframe>
         </li>
         <br>
         <li>
             <strong><a href="https://www.youtube.com/watch?v=1fDRUVlbJog">Collection Reports demo, get data from many data sources</a></strong><br><br>
+            <iframe width="806" height="453" src="https://www.youtube.com/embed/1fDRUVlbJog" frameborder="0"
+                    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen></iframe>
         </li>
         <br>
         <li>
             <strong><a href="https://www.youtube.com/watch?v=3dXya4XU6sw">Access rights demo</a></strong><br><br>
+            <iframe width="806" height="453" src="https://www.youtube.com/embed/3dXya4XU6sw" frameborder="0"
+                    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen></iframe>
         </li>
         <br>
         <li>
             <strong><a href="https://www.youtube.com/watch?v=XLDj9r4a3uE">Hyperlinks demo</a></strong><br><br>
+            <iframe width="806" height="453" src="https://www.youtube.com/embed/XLDj9r4a3uE" frameborder="0"
+                    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen></iframe>
         </li>
         <br>
         <li>
             <strong><a href="https://www.youtube.com/watch?v=Qwvjkg3jZQs">Scheduler demo</a></strong><br><br>
+            <iframe width="806" height="453" src="https://www.youtube.com/embed/Qwvjkg3jZQs" frameborder="0"
+                    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen></iframe>
         </li>
     </ol>
 </div>
