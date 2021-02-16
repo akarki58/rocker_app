@@ -9,24 +9,27 @@
 <body>
 <div class="container">
     <h1>Rocker Reporting Application</h1>
-    <h2>for Odoo 12.0 & Odoo 13.0</h2>
+    <h2>for Odoo 12.0 / Odoo 13.0 / Odoo 14.0</h2>
     Collect data to single Excel from various data sources, Use Excel templates to present business graphs. Combine data
     with Excel Power Pivot. Get data from Odoo & external PostgreSQL, SQLServer, MySQL, MariaDB, ODBC or Oracle databases.
     <p>
     <h2>News/Notes:</h2>
     <ul>
-        <li><b>24.2.2020</b><p>Did you create nice report that takes data from Odoo or other well known Application?<br>
-            Why don't you share it with others. Upload your Excel template, SQL & screendump to
-            <b><a href="https://github.com/akarki58/rocker_templates">Rocker_Templates repository ( https://github.com/akarki58/rocker_templates )</a></b></p>
-            <p>Author contact: antti.rocker.karki@outlook.com</p>
+        <li><b>15.2.2021</b>
+        <p>At the moment we have a problem starting Excel if Odoo runs as a service.<br>
+            Everything works well if you start Odoo from command prompt. See install guide in docs folder.<p>
+            If someone knows the solution to: excel = win32.gencache.EnsureDispatch('Excel.Application') causing 
+            (-2147023584, 'A specified logon session does not exist. It may already have been terminated.', None, None) error, pls email.<p>
+            Openpyxl version <a href="https://apps.odoo.com/apps/modules/14.0/rocker_app_v3/">https://apps.odoo.com/apps/modules/14.0/rocker_app_v3/</a> 
+            does not have a problem but this one supports all Excel 2016 features including Power Pivot</p>
+        <p>Author contact: antti.rocker.karki@outlook.com</p>
         </li>
     </ul>
     <p>
     <h2>Requirements:</h2>
     <ol>
-        <li>Odoo 12 or Odoo 13 installed on Windows platform</li>
-        <li>Excel 32-bit installed on server</li>
-        <li>Win32Com installed on server</li>
+        <li>Odoo 12 or Odoo 13 or Odoo 14 installed on Windows platform</li>
+        <li>Excel installed on server</li>
         <li>Datasource drivers (PostgreSQL, SQLServer, Oracle, MySQL, MariaDB etc.) installed on server based on your
             needs
         </li>
@@ -58,6 +61,13 @@
                     allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
                     allowfullscreen></iframe>
 
+        </li>
+        <br>
+        <li>
+            <strong><a href="https://www.youtube.com/watch?v=xGtZNKU_WaI">PowerPoints demo</a></strong><br><br>
+            <iframe width="806" height="453" src="https://www.youtube.com/embed/xGtZNKU_WaI" frameborder="0"
+                    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen></iframe>
         </li>
         <br>
         <li>
