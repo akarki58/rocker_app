@@ -1,0 +1,947 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* rocker_app
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 13.0-20220828\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-08-28 16:12+0000\n"
+"PO-Revision-Date: 2022-08-29 00:59+0800\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: \n"
+"X-Generator: Poedit 3.1.1\n"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__show_values__pros_inside
+msgid "% Inside"
+msgstr "% 在内"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__show_values__pros_outside
+msgid "% Outside"
+msgstr "% 外部"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__77
+msgid "100% Stacked Area"
+msgstr ""
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__59
+msgid "100% Stacked Bar"
+msgstr ""
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__53
+msgid "100% Stacked Column"
+msgstr "100% Stacked Column"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__64
+msgid "100% Stacked Line"
+msgstr "100%曲线"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__67
+msgid "100% Stacked Line with Markers"
+msgstr "100%曲线与标记"
+
+#. module: rocker_app
+#: model_terms:ir.ui.view,arch_db:rocker_app.rocker_about
+msgid "About Rocker Reporting"
+msgstr "关于 Rocker Reporting"
+
+#. module: rocker_app
+#: model:ir.ui.menu,name:rocker_app.menu_rocker_about
+msgid "About Rocker Reporting..."
+msgstr "关于 Rocker Reporting..."
+
+#. module: rocker_app
+#: model_terms:ir.ui.view,arch_db:rocker_app.view_form_report
+msgid "Access rights"
+msgstr "权限控制"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__active
+#: model_terms:ir.ui.view,arch_db:rocker_app.view_search_report
+msgid "Active"
+msgstr "激活"
+
+#. module: rocker_app
+#: model_terms:ir.ui.view,arch_db:rocker_app.rocker_executor_view_search
+msgid "All"
+msgstr "所有"
+
+#. module: rocker_app
+#: model_terms:ir.ui.view,arch_db:rocker_app.view_form_report
+msgid "Archived"
+msgstr "已激活"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__1
+msgid "Area"
+msgstr "区域"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__author_id
+msgid "Author"
+msgstr "作者"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__legend__bottom
+msgid "Bottom"
+msgstr "按钮"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__15
+msgid "Bubble"
+msgstr "冒泡"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__element__chart
+msgid "Chart"
+msgstr "图表"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__chart_type
+msgid "Chart type"
+msgstr "图表类型"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__57
+msgid "Clustered Bar"
+msgstr "分层条形图"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__51
+msgid "Clustered Column"
+msgstr "群集列"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__report_type__collection
+msgid "Collection"
+msgstr "收集"
+
+#. module: rocker_app
+#: model_terms:ir.ui.view,arch_db:rocker_app.view_search_report
+msgid "Collection Reports"
+msgstr "收集报告"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__report_ids
+msgid "Collection reports:    (If Excel then check that Sheet names are unique!)"
+msgstr "收集报告。    (如果是Excel，那么请检查工作表的名称是否唯一！）。"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report_collection__collection_id
+msgid "Collection_id"
+msgstr "Collection_id"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__column_headings
+msgid "Column headings"
+msgstr "列标题"
+
+#. module: rocker_app
+#: model:ir.model.fields,help:rocker_app.field_rocker_report__column_headings
+msgid "Column headings separated with ;"
+msgstr "以分隔的列标题 ;"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_about__create_uid
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_archive__create_uid
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_database__create_uid
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_popup_wizard__create_uid
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__create_uid
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report_collection__create_uid
+msgid "Created by"
+msgstr "创建人"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_about__create_date
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_archive__create_date
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_database__create_date
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_popup_wizard__create_date
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__create_date
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report_collection__create_date
+msgid "Created on"
+msgstr "创建于"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_database__database
+msgid "Database or SID "
+msgstr "数据库或SID "
+
+#. module: rocker_app
+#: model:ir.ui.menu,name:rocker_app.menu_rocker_database
+#: model_terms:ir.ui.view,arch_db:rocker_app.view_form_rocker_database
+msgid "Databases"
+msgstr "数据库"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__database
+msgid "Datasource"
+msgstr "数据源"
+
+#. module: rocker_app
+#: model:ir.model.constraint,message:rocker_app.constraint_rocker_database_unique_name
+msgid "Datasource Name must be unique"
+msgstr "数据源名称必须是唯一的"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__date_executed
+msgid "Date Executed"
+msgstr "执行日期"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__description
+msgid "Description"
+msgstr "描述"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_about__display_name
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_archive__display_name
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_database__display_name
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_popup_wizard__display_name
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__display_name
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report_collection__display_name
+msgid "Display Name"
+msgstr "显示名称"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__-4120
+msgid "Doughnut"
+msgstr "炸裂"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_database__driver
+msgid "Driver"
+msgstr "驱动"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__element
+msgid "Element type"
+msgstr "元素类型"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__elements_per_slide
+msgid "Elements per Slide"
+msgstr "每张幻灯片的元素"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__email_to
+msgid "Email To"
+msgstr "发邮件给"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__report_application__excel
+msgid "Excel Report"
+msgstr "Excel 报告"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__sheet_name
+msgid "Excel Sheet Name"
+msgstr "Excel Sheet 名称"
+
+#. module: rocker_app
+#: model_terms:ir.ui.view,arch_db:rocker_app.view_form_report
+msgid "Execute"
+msgstr "执行"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__execute_link
+msgid "Execute & download link"
+msgstr "执行 & 下载链接"
+
+#. module: rocker_app
+#: model_terms:ir.ui.view,arch_db:rocker_app.view_form_report
+msgid "Execute Every"
+msgstr "每天执行"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__execute_at
+msgid "Execute at (timezone=UTC)"
+msgstr "执行在 (timezone=UTC)"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__interval_type
+msgid "Execute report every"
+msgstr "每天执行报告"
+
+#. module: rocker_app
+#: model_terms:ir.ui.view,arch_db:rocker_app.view_form_report
+msgid "Execute report immediately?"
+msgstr "立即执行报告？"
+
+#. module: rocker_app
+#: model_terms:ir.ui.view,arch_db:rocker_app.rocker_executor_view_search
+msgid "Execution"
+msgstr "执行"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_archive__date_executed
+msgid "Execution date"
+msgstr "执行日期"
+
+#. module: rocker_app
+#: model:ir.actions.act_window,name:rocker_app.rocker_executor_act
+#: model:ir.ui.menu,name:rocker_app.menu_rocker_executor
+msgid "Executor"
+msgstr "执行器"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__80
+msgid "Exploded Doughnut"
+msgstr "炸裂饼状图"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__69
+msgid "Exploded Pie"
+msgstr "分解饼状图"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__999969
+msgid "Exploded Pie (category from rows)"
+msgstr "分解饼状图（从行中的类别中）"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__82
+msgid "Filled Radar"
+msgstr "填充雷达图"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__firstcall
+msgid "First Execution"
+msgstr "首次执行"
+
+#. module: rocker_app
+#: model_terms:ir.ui.view,arch_db:rocker_app.rocker_executor_view_search
+msgid "Group By"
+msgstr "分组"
+
+#. module: rocker_app
+#: model_terms:ir.ui.view,arch_db:rocker_app.view_search_report
+msgid "Group By..."
+msgstr "分组..."
+
+#. module: rocker_app
+#: model_terms:ir.ui.view,arch_db:rocker_app.view_search_report
+msgid "Group by Report type"
+msgstr "按报告类型分组"
+
+#. module: rocker_app
+#: model:ir.ui.menu,name:rocker_app.menu_rocker_help
+msgid "Help"
+msgstr "帮助"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_database__host
+msgid "Host"
+msgstr "主机"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_about__id
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_archive__id
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_database__id
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_popup_wizard__id
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__id
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report_collection__id
+msgid "ID"
+msgstr "ID"
+
+#. module: rocker_app
+#: model_terms:ir.ui.view,arch_db:rocker_app.view_search_report
+msgid "Inactive"
+msgstr "不活跃的"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__show_values__inside
+msgid "Inside"
+msgstr ""
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__interval_number
+msgid "Interval"
+msgstr "间隔"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_about____last_update
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_archive____last_update
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_database____last_update
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_popup_wizard____last_update
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report____last_update
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report_collection____last_update
+msgid "Last Modified on"
+msgstr "最后修改时间"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_about__write_uid
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_archive__write_uid
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_database__write_uid
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_popup_wizard__write_uid
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__write_uid
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report_collection__write_uid
+msgid "Last Updated by"
+msgstr "最后更新时间"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_about__write_date
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_archive__write_date
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_database__write_date
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_popup_wizard__write_date
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__write_date
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report_collection__write_date
+msgid "Last Updated on"
+msgstr "最后更新于"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__report
+msgid "Lastest Report"
+msgstr "最新报告"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_about__legal
+msgid "Legal"
+msgstr "法律"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__legend
+msgid "Legend"
+msgstr "图例"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__4
+msgid "Line"
+msgstr "折线图"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__65
+msgid "Line with Markers"
+msgstr "带标记的折线图"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_database__driver__mariadb
+msgid "MariaDB"
+msgstr "MariaDB"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_popup_wizard__name
+#: model_terms:ir.ui.view,arch_db:rocker_app.rocker_popup_wizard
+msgid "Message"
+msgstr "消息"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__email_body
+msgid "Message Body"
+msgstr "消息正文"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_database__driver__mysql
+msgid "MySQL"
+msgstr "MySQL"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_about__name
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__name
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report_collection__name
+msgid "Name"
+msgstr "名称"
+
+#. module: rocker_app
+#: model_terms:ir.ui.view,arch_db:rocker_app.view_form_report
+msgid "New report"
+msgstr "新的报告"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__nextcall
+msgid "Next Execution"
+msgstr "执行下一个"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__legend__none
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__show_values__none
+msgid "None"
+msgstr "None"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_database__driver__odbc
+msgid "ODBC"
+msgstr "ODBC"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_database__odbcdriver
+msgid "ODBC driver"
+msgstr "ODBC 驱动"
+
+#. module: rocker_app
+#: model_terms:ir.ui.view,arch_db:rocker_app.rocker_about
+#: model_terms:ir.ui.view,arch_db:rocker_app.rocker_popup_wizard
+msgid "OK"
+msgstr "OK"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_database__driver__oracle
+msgid "Oracle"
+msgstr "Oracle"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__show_values__outside
+msgid "Outside"
+msgstr "外部"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_database__password
+msgid "Password"
+msgstr "密码"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_about__paypal
+msgid "PayPal"
+msgstr "PayPal"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__perma_link
+msgid "Permanent link to latest"
+msgstr "最新的永久链接"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__5
+msgid "Pie"
+msgstr "饼状图"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__99995
+msgid "Pie  (category from rows)"
+msgstr "饼状图（从行的类别）"
+
+#. module: rocker_app
+#: model:ir.model,name:rocker_app.model_rocker_popup_wizard
+msgid "Popup wizard to display messages"
+msgstr "显示信息的弹出式向导"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_database__port
+msgid "Port"
+msgstr "端口"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_database__driver__postgresql
+msgid "PostrgeSQL"
+msgstr "PostrgeSQL"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__report_application__powerpoint
+msgid "PowerPoint Report"
+msgstr "PPT报告"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__date_published
+msgid "Published"
+msgstr "已发布"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__-4151
+msgid "Radar"
+msgstr "雷达图"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__81
+msgid "Radar with Data Markers"
+msgstr "带数据标记的雷达图"
+
+#. module: rocker_app
+#: model_terms:ir.ui.view,arch_db:rocker_app.view_form_report
+msgid "Report"
+msgstr "报告"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__report_application
+msgid "Report App"
+msgstr "报告App"
+
+#. module: rocker_app
+#: model:ir.ui.menu,name:rocker_app.menu_rocker_archive
+msgid "Report Archive"
+msgstr "报告档案"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_archive__file_name
+msgid "Report File"
+msgstr "报告文件"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__file_name
+msgid "Report Filename"
+msgstr "报告文件名"
+
+#. module: rocker_app
+#: model_terms:ir.ui.view,arch_db:rocker_app.view_form_report
+msgid "Report Name"
+msgstr "报告名称"
+
+#. module: rocker_app
+#: model_terms:ir.ui.view,arch_db:rocker_app.view_form_rocker_archive
+msgid "Report file"
+msgstr "报告文件"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__collection_ids
+msgid "Report in Collections"
+msgstr "报告集"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_archive__report_file
+#: model_terms:ir.ui.view,arch_db:rocker_app.view_form_rocker_archive
+msgid "Report size"
+msgstr "报告大小"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__report_template
+msgid "Report template"
+msgstr "报告模板"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__report_type
+#: model_terms:ir.ui.view,arch_db:rocker_app.view_form_report
+msgid "Report type"
+msgstr "报告类别"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report_collection__report_id
+msgid "Report_id"
+msgstr "Report_id"
+
+#. module: rocker_app
+#: model:ir.ui.menu,name:rocker_app.menu_rocker_report
+#: model_terms:ir.ui.view,arch_db:rocker_app.view_form_report
+msgid "Reports"
+msgstr "报告"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__legend__right
+msgid "Right"
+msgstr "权限"
+
+#. module: rocker_app
+#: model:ir.module.category,name:rocker_app.module_rocker_category
+#: model:ir.ui.menu,name:rocker_app.rocker_menu
+msgid "Rocker"
+msgstr "Rocker"
+
+#. module: rocker_app
+#: model:ir.model,name:rocker_app.model_rocker_about
+msgid "Rocker About box"
+msgstr ""
+
+#. module: rocker_app
+#: model:ir.actions.act_window,name:rocker_app.action_rocker_archive
+msgid "Rocker Archive"
+msgstr "Rocker档案"
+
+#. module: rocker_app
+#: model:ir.model,name:rocker_app.model_rocker_report_collection
+msgid "Rocker Collection Reports"
+msgstr ""
+
+#. module: rocker_app
+#: model:ir.actions.act_window,name:rocker_app.action_rocker_database
+msgid "Rocker Databases"
+msgstr "Rocker数据库"
+
+#. module: rocker_app
+#: model:res.groups,name:rocker_app.rocker_group_manager
+msgid "Rocker Manager"
+msgstr "Rocker管理员"
+
+#. module: rocker_app
+#: model_terms:ir.ui.view,arch_db:rocker_app.view_form_report
+msgid "Rocker Report"
+msgstr "Rocker报告"
+
+#. module: rocker_app
+#: model_terms:ir.ui.view,arch_db:rocker_app.rocker_executor_view_form
+msgid "Rocker Report Executor"
+msgstr "Rocker报告执行器"
+
+#. module: rocker_app
+#: model:ir.model,name:rocker_app.model_rocker_report
+msgid "Rocker Reporting"
+msgstr "Rocker报告"
+
+#. module: rocker_app
+#: model:ir.model,name:rocker_app.model_rocker_archive
+msgid "Rocker Reporting Archive"
+msgstr "Rocker报告档案"
+
+#. module: rocker_app
+#: model:ir.model,name:rocker_app.model_rocker_database
+msgid "Rocker Reporting Databases"
+msgstr "Rocker报告数据库"
+
+#. module: rocker_app
+#: model:ir.actions.act_window,name:rocker_app.action_rocker_report
+msgid "Rocker Reports"
+msgstr "Rocker报告"
+
+#. module: rocker_app
+#: model:res.groups,name:rocker_app.rocker_group_user
+msgid "Rocker User"
+msgstr "Rocker用户"
+
+#. module: rocker_app
+#: model:ir.actions.server,name:rocker_app.rocker_report_execute_request
+msgid "Rocker report execute request"
+msgstr "Rocker报告执行器要求"
+
+#. module: rocker_app
+#: model:ir.actions.server,name:rocker_app.rocker_cron_report_executor_ir_actions_server
+#: model:ir.cron,cron_name:rocker_app.rocker_cron_report_executor
+#: model:ir.cron,name:rocker_app.rocker_cron_report_executor
+msgid "Rocker report executor"
+msgstr "Rocker报告执行器"
+
+#. module: rocker_app
+#: model_terms:ir.ui.view,arch_db:rocker_app.rocker_executor_view_form
+msgid "Run Manually"
+msgstr ""
+
+#. module: rocker_app
+#: model_terms:ir.ui.view,arch_db:rocker_app.rocker_executor_view_form
+msgid "Running"
+msgstr ""
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_database__driver__sqlserver
+msgid "SQLServer"
+msgstr "SQLServer"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__-4169
+msgid "Scatter"
+msgstr ""
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__74
+msgid "Scatter with Lines"
+msgstr ""
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__75
+msgid "Scatter with Lines and No Data Markers"
+msgstr "带有线条和无数据标记的散点"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__72
+msgid "Scatter with Smoothed Lines"
+msgstr "用平滑线进行散射"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__73
+msgid "Scatter with Smoothed Lines and No Data Markers"
+msgstr "带平滑线和无数据标记的散点图"
+
+#. module: rocker_app
+#: model_terms:ir.ui.view,arch_db:rocker_app.rocker_executor_view_search
+msgid "Scheduled Action"
+msgstr "计划动作"
+
+#. module: rocker_app
+#: model_terms:ir.ui.view,arch_db:rocker_app.rocker_executor_view_search
+#: model_terms:ir.ui.view,arch_db:rocker_app.rocker_executor_view_tree
+msgid "Scheduled Actions"
+msgstr "计划动作"
+
+#. module: rocker_app
+#: model_terms:ir.ui.view,arch_db:rocker_app.view_form_report
+msgid "Scheduling"
+msgstr ""
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__schedule_onoff
+msgid "Scheduling Active"
+msgstr ""
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__select_clause
+msgid "Select"
+msgstr "选择"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__send_by_email
+msgid "Send by Email"
+msgstr "发送Email"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__sequence
+msgid "Sequence"
+msgstr ""
+
+#. module: rocker_app
+#: model:ir.model.fields,help:rocker_app.field_rocker_report_collection__sequence
+msgid "Sequence for the handle."
+msgstr ""
+
+#. module: rocker_app
+#: model:ir.actions.server,name:rocker_app.action_rocker_about_prog
+msgid "Show About"
+msgstr ""
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__show_values
+msgid "Show values"
+msgstr ""
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__report_type__single
+msgid "Single"
+msgstr ""
+
+#. module: rocker_app
+#: model_terms:ir.ui.view,arch_db:rocker_app.view_search_report
+msgid "Single Reports"
+msgstr ""
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__slide_title
+msgid "Slide Title"
+msgstr ""
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__76
+msgid "Stacked Area"
+msgstr ""
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__58
+msgid "Stacked Bar"
+msgstr ""
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__52
+#, fuzzy
+msgid "Stacked Column"
+msgstr "列映射"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__63
+msgid "Stacked Line"
+msgstr ""
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__66
+msgid "Stacked Line with Markers"
+msgstr ""
+
+#. module: rocker_app
+#: model_terms:ir.ui.view,arch_db:rocker_app.rocker_executor_view_form
+msgid "Start/Stop"
+msgstr "启动/停止"
+
+#. module: rocker_app
+#: model_terms:ir.ui.view,arch_db:rocker_app.rocker_executor_view_form
+msgid "Stopped"
+msgstr "已停止"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__store_history
+msgid "Store to Archive"
+msgstr ""
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__email_subject
+msgid "Subject"
+msgstr "子标题"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__element__table
+msgid "Table"
+msgstr "表格"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__template_name
+#: model_terms:ir.ui.view,arch_db:rocker_app.view_form_report
+msgid "Template Filename"
+msgstr "模板文件名称"
+
+#. module: rocker_app
+#: model:ir.actions.server,name:rocker_app.action_test_excel
+msgid "Test Excel"
+msgstr "测试Excel"
+
+#. module: rocker_app
+#: model:ir.ui.menu,name:rocker_app.menu_rocker_testexcel
+msgid "Test Excel creation"
+msgstr "测试创建Excel"
+
+#. module: rocker_app
+#: model_terms:ir.ui.view,arch_db:rocker_app.view_form_rocker_database
+msgid "Test connection"
+msgstr "连接测试"
+
+#. module: rocker_app
+#: model_terms:ir.ui.view,arch_db:rocker_app.view_form_rocker_database
+msgid "Test connection?"
+msgstr "连接测试？"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_archive__name
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_database__name
+msgid "Title"
+msgstr "标题"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_database__user
+#: model_terms:ir.ui.view,arch_db:rocker_app.rocker_executor_view_search
+msgid "User"
+msgstr "用户"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report__company_id
+msgid "User belonging this company hierarchy can view report"
+msgstr "属于该公司层次的用户可以查看报告"
+
+#. module: rocker_app
+#: model:ir.actions.act_window,name:rocker_app.action_excel_form
+msgid "archive.action"
+msgstr "archive.action"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__interval_type__day
+msgid "day"
+msgstr "日"
+
+#. module: rocker_app
+#: model_terms:ir.ui.view,arch_db:rocker_app.view_form_rocker_database
+msgid "example: SQL Server"
+msgstr "例如: SQL Server"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__interval_type__hour
+msgid "hour"
+msgstr "时"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__interval_type__min
+msgid "min"
+msgstr "分"
+
+#. module: rocker_app
+#: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__interval_type__month
+msgid "month"
+msgstr "月"
+
+#. module: rocker_app
+#: model_terms:ir.ui.view,arch_db:rocker_app.view_search_report
+msgid "report_filter"
+msgstr "report_filter"
+
+#. module: rocker_app
+#: model:ir.model.fields,field_description:rocker_app.field_rocker_report_collection__sequence
+msgid "sequence"
+msgstr ""
