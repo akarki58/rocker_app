@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Odoo Server 13.0-20220828\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2022-08-28 16:12+0000\n"
-"PO-Revision-Date: 2022-08-29 00:59+0800\n"
+"PO-Revision-Date: 2022-08-29 22:25+0800\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: zh_CN\n"
@@ -30,12 +30,12 @@ msgstr "% 外部"
 #. module: rocker_app
 #: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__77
 msgid "100% Stacked Area"
-msgstr ""
+msgstr "100% 堆叠区域"
 
 #. module: rocker_app
 #: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__59
 msgid "100% Stacked Bar"
-msgstr ""
+msgstr "100% 堆叠柱形"
 
 #. module: rocker_app
 #: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__53
@@ -363,7 +363,7 @@ msgstr "不活跃的"
 #. module: rocker_app
 #: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__show_values__inside
 msgid "Inside"
-msgstr ""
+msgstr "在内"
 
 #. module: rocker_app
 #: model:ir.model.fields,field_description:rocker_app.field_rocker_report__interval_number
@@ -637,7 +637,7 @@ msgstr "Rocker"
 #. module: rocker_app
 #: model:ir.model,name:rocker_app.model_rocker_about
 msgid "Rocker About box"
-msgstr ""
+msgstr "Rocker关于对话框"
 
 #. module: rocker_app
 #: model:ir.actions.act_window,name:rocker_app.action_rocker_archive
@@ -647,7 +647,7 @@ msgstr "Rocker档案"
 #. module: rocker_app
 #: model:ir.model,name:rocker_app.model_rocker_report_collection
 msgid "Rocker Collection Reports"
-msgstr ""
+msgstr "Rocker收集报告"
 
 #. module: rocker_app
 #: model:ir.actions.act_window,name:rocker_app.action_rocker_database
@@ -709,12 +709,12 @@ msgstr "Rocker报告执行器"
 #. module: rocker_app
 #: model_terms:ir.ui.view,arch_db:rocker_app.rocker_executor_view_form
 msgid "Run Manually"
-msgstr ""
+msgstr "手动运行"
 
 #. module: rocker_app
 #: model_terms:ir.ui.view,arch_db:rocker_app.rocker_executor_view_form
 msgid "Running"
-msgstr ""
+msgstr "运行中"
 
 #. module: rocker_app
 #: model:ir.model.fields.selection,name:rocker_app.selection__rocker_database__driver__sqlserver
@@ -724,12 +724,12 @@ msgstr "SQLServer"
 #. module: rocker_app
 #: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__-4169
 msgid "Scatter"
-msgstr ""
+msgstr "散点图"
 
 #. module: rocker_app
 #: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__74
 msgid "Scatter with Lines"
-msgstr ""
+msgstr "折线散点图"
 
 #. module: rocker_app
 #: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__75
@@ -760,12 +760,12 @@ msgstr "计划动作"
 #. module: rocker_app
 #: model_terms:ir.ui.view,arch_db:rocker_app.view_form_report
 msgid "Scheduling"
-msgstr ""
+msgstr "计划"
 
 #. module: rocker_app
 #: model:ir.model.fields,field_description:rocker_app.field_rocker_report__schedule_onoff
 msgid "Scheduling Active"
-msgstr ""
+msgstr "活动计划"
 
 #. module: rocker_app
 #: model:ir.model.fields,field_description:rocker_app.field_rocker_report__select_clause
@@ -780,63 +780,62 @@ msgstr "发送Email"
 #. module: rocker_app
 #: model:ir.model.fields,field_description:rocker_app.field_rocker_report__sequence
 msgid "Sequence"
-msgstr ""
+msgstr "序列"
 
 #. module: rocker_app
 #: model:ir.model.fields,help:rocker_app.field_rocker_report_collection__sequence
 msgid "Sequence for the handle."
-msgstr ""
+msgstr "序列句柄。"
 
 #. module: rocker_app
 #: model:ir.actions.server,name:rocker_app.action_rocker_about_prog
 msgid "Show About"
-msgstr ""
+msgstr "显示关于"
 
 #. module: rocker_app
 #: model:ir.model.fields,field_description:rocker_app.field_rocker_report__show_values
 msgid "Show values"
-msgstr ""
+msgstr "显示参数"
 
 #. module: rocker_app
 #: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__report_type__single
 msgid "Single"
-msgstr ""
+msgstr "单一"
 
 #. module: rocker_app
 #: model_terms:ir.ui.view,arch_db:rocker_app.view_search_report
 msgid "Single Reports"
-msgstr ""
+msgstr "单一报告"
 
 #. module: rocker_app
 #: model:ir.model.fields,field_description:rocker_app.field_rocker_report__slide_title
 msgid "Slide Title"
-msgstr ""
+msgstr "Slide 标题"
 
 #. module: rocker_app
 #: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__76
 msgid "Stacked Area"
-msgstr ""
+msgstr "堆叠区域"
 
 #. module: rocker_app
 #: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__58
 msgid "Stacked Bar"
-msgstr ""
+msgstr "堆叠柱形"
 
 #. module: rocker_app
 #: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__52
-#, fuzzy
 msgid "Stacked Column"
-msgstr "列映射"
+msgstr "堆叠柱状图"
 
 #. module: rocker_app
 #: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__63
 msgid "Stacked Line"
-msgstr ""
+msgstr "堆叠折线图"
 
 #. module: rocker_app
 #: model:ir.model.fields.selection,name:rocker_app.selection__rocker_report__chart_type__66
 msgid "Stacked Line with Markers"
-msgstr ""
+msgstr "带标记的堆叠折线图"
 
 #. module: rocker_app
 #: model_terms:ir.ui.view,arch_db:rocker_app.rocker_executor_view_form
@@ -851,7 +850,7 @@ msgstr "已停止"
 #. module: rocker_app
 #: model:ir.model.fields,field_description:rocker_app.field_rocker_report__store_history
 msgid "Store to Archive"
-msgstr ""
+msgstr "存储到存档"
 
 #. module: rocker_app
 #: model:ir.model.fields,field_description:rocker_app.field_rocker_report__email_subject
@@ -944,4 +943,4 @@ msgstr "report_filter"
 #. module: rocker_app
 #: model:ir.model.fields,field_description:rocker_app.field_rocker_report_collection__sequence
 msgid "sequence"
-msgstr ""
+msgstr "序列"
