@@ -24,9 +24,6 @@ from odoo import http
 import logging
 import tempfile
 from datetime import date, datetime, timedelta
-import win32com.client as win32
-from win32com.client import constants
-import pythoncom
 import base64
 from . import rocker_connection
 import os
@@ -35,6 +32,11 @@ import sys
 import shutil
 import time
 #pip install python-pptx
+import traceback
+import pythoncom
+import win32api
+import win32com
+from win32com.client import constants
 
 
 _logger = logging.getLogger(__name__)
@@ -45,6 +47,10 @@ _logger = logging.getLogger(__name__)
 # _logger.warning('A WARNING message')
 # _logger.error('An ERROR message')
 # --log_level=:DEBUG
+@api.model
+def _lang_get(self):
+    return self.env['res.lang'].get_installed()
+
 class rocker_report_collection(models.Model):
     _name = 'rocker.report.collection'
     _description = 'Rocker Collection Reports'
@@ -193,6 +199,9 @@ class Report(models.Model):
     email_to = fields.Char('Email To')
     email_body = fields.Text('Message Body', default='[FILENAME] has been executed at [DATETIME]<p>Cheers<br/>Rocker')
 
+    lang = fields.Selection(_lang_get, string='Language',
+                            help="Show data in this language if many available.")
+
 
 
     # @api.multi # odoo 13 does not use these
@@ -299,7 +308,7 @@ class Report(models.Model):
             if con:
                 _logger.debug('Populate single Powerpoint report')
                 # one per page
-                slide, element_written = self._populate_pp_sql(self, con, prs, slide, page_elements, pp_title, self.select_clause, self.column_headings, cnt_report, element_written, collection)
+                slide, element_written = self._populate_pp_sql(self, con, prs, slide, page_elements, pp_title, self.select_clause, self.column_headings, cnt_report, element_written, collection, self.lang)
             else:
                 raise exceptions.ValidationError('No DB connection')
 
@@ -330,7 +339,7 @@ class Report(models.Model):
                     _logger.debug('Report number ' +  str(cnt_report) + ' on Slide: ' + str(slides_created))
                 if con:
                     _logger.debug('PowerPoint Collection report populate')
-                    slide, element_written = self._populate_pp_sql(report, con, prs, slide, page_elements, pp_title, report.select_clause, report.column_headings, cnt_report, element_written, collection)
+                    slide, element_written = self._populate_pp_sql(report, con, prs, slide, page_elements, pp_title, report.select_clause, report.column_headings, cnt_report, element_written, collection, report.lang)
                 else:
                     raise exceptions.ValidationError('No DB connection')
                 cnt_report += 1
@@ -427,7 +436,7 @@ class Report(models.Model):
             _logger.debug('Template does not exist in TEMP')
         try:
             pythoncom.CoInitialize()
-            excel = win32.gencache.EnsureDispatch('Excel.Application')
+            excel = win32com.client.dynamic.Dispatch("Excel.Application")
         except Exception as e:
             raise exceptions.ValidationError("Can't start Excel\n\n" + str(e))
             return False
@@ -471,7 +480,7 @@ class Report(models.Model):
             # let's fill with data
             if con:
                 _logger.debug('Populate single report')
-                self._populate_sql(con, worksheet, self.select_clause, self.column_headings)
+                self._populate_sql(con, worksheet, self.select_clause, self.column_headings, self.lang)
             else:
                 raise exceptions.ValidationError('No DB connection')
 
@@ -487,7 +496,7 @@ class Report(models.Model):
                 # let's fill with data
                 if con:
                     _logger.debug('Collection report populate')
-                    self._populate_sql(con, worksheet, report.select_clause, report.column_headings)
+                    self._populate_sql(con, worksheet, report.select_clause, report.column_headings, report.lang)
                 else:
                     raise exceptions.ValidationError('No DB connection')
 
@@ -632,7 +641,7 @@ class Report(models.Model):
         else:
             raise exceptions.ValidationError('Exception, No Database connection')
 
-    def _populate_sql(self, con, worksheet, sql, headings, context=None):
+    def _populate_sql(self, con, worksheet, sql, headings, language, context=None):
 
         _headerlist = headings.split(';')
         header = [head.strip() for head in _headerlist]
@@ -671,11 +680,15 @@ class Report(models.Model):
 
         if not (self._sqldriver == 'sqlserver'):
             # add data rows
+            _logger.debug('records: ' + str(records))
             for row in records:
+                _logger.debug('row: ' + str(row))
                 j = len(row)
                 c = 0
                 for col in row:
-                    worksheet.Cells(r, c + 1).Value = row[c]
+                    _logger.debug('col: ' + str(col))
+                    #worksheet.Cells(r, c + 1).Value = row[c]
+                    worksheet.Cells(r, c + 1).Value = self._choose_lang(language, col)
                     c = c + 1
                 r = r + 1
 
@@ -699,7 +712,7 @@ class Report(models.Model):
             con.close()
         return True
 
-    def _populate_pp_sql(self, report, con, prs, slide, page_elements, pp_title, sql, headings, cnt_report, last_element_written, collection, context=None):
+    def _populate_pp_sql(self, report, con, prs, slide, page_elements, pp_title, sql, headings, cnt_report, last_element_written, collection, language, context=None):
         from pptx.enum.chart import XL_CHART_TYPE
         from pptx.enum.chart import XL_LEGEND_POSITION
         from pptx.enum.chart import XL_LABEL_POSITION
@@ -754,6 +767,19 @@ class Report(models.Model):
             raise exceptions.ValidationError('Error in Select clause!\n\n' + str(e))
 
         records = cur.fetchall()
+        # language selection
+        list_records = list(records)
+        for i in range(len(list_records)):
+            list_row = list(list_records[i])
+            for j in range(len(list_row)):
+                list_row[j] = self._choose_lang(language, list_row[j])
+                # _logger.debug('List_row: ')
+                _logger.debug(list_row[j])
+            list_records[i] = tuple(list_row)
+        _logger.debug('List_Recrds: ' )
+        _logger.debug(list_records)
+        records = tuple(list_records)
+
         i = len(records)
 
         j = 0
@@ -1036,6 +1062,28 @@ class Report(models.Model):
         #return True
         return slide, element_written
 
+    def _choose_lang(self, language, data):
+        #  language
+        col_data = ''
+        if type(data) is dict:
+            _logger.debug('Dict: ' + str(data))
+            if language:
+                _logger.debug('Language: ' + language)
+                if language in data:
+                    col_data = data[language]
+                else:
+                    col_data = list(data.values())[0]
+                _logger.debug('Language col taken: ' + col_data)
+
+            else:
+                _logger.debug('NO Language taking first: ' + list(data.values())[0])
+                col_data = list(data.values())[0]
+        else:
+            _logger.debug('Str or int: ' + str(data))
+            return data
+        return col_data
+
+
     def _find_place(self, page_elements, element_written, pp_title):
         from pptx.util import Pt
         from pptx.util import Inches
@@ -1308,12 +1356,13 @@ class Report(models.Model):
             os.remove(os.path.join(mytmpdir, template_filename))
         except:
             _logger.debug('Test_template does not exist')
+        pythoncom.CoInitialize()
+        # first we create empty excel and store that to template field
+        _logger.debug('win32com.client.dynamic.Dispatch("Excel.Application")')
         try:
-            _logger.debug('Pythoncom')
-            pythoncom.CoInitialize()
-            # first we create empty excel and store that to template field
-            _logger.debug('win32.gencache.Ensuredispatch')
-            excel = win32.gencache.EnsureDispatch('Excel.Application')
+            excel = win32com.client.dynamic.Dispatch("Excel.Application")
+            #excel = win32com.client.gencache.EnsureDispatch('Excel.Application') # can not run makepy process
+            excel.Visible = False
             excel.DisplayAlerts = False  # disable overwrite warning
             wb = excel.Workbooks.Add()
             sheet = wb.Worksheets(1)
@@ -1324,8 +1373,21 @@ class Report(models.Model):
             wb.Close()
             #
             excel.Application.Quit()
+        except Exception as e:
+            raise exceptions.ValidationError('Excel test\n\n' + str(e))
+        #excel = win32.gencache.EnsureDispatch('Excel.Application')
+        #excel = win32.gencache.EnsureDispatch('Excel.Application', clsctx=pythoncom.CLSCTX_LOCAL_SERVER)
+        #excel = win32.dynamic.Dispatch('Excel.Application')
+        #excel = win32.dynamic.Dispatch('Excel.Application', clsctx=pythoncom.CLSCTX_LOCAL_SERVER)
+        #excel = win32.DispatchEx('Excel.Application',userName="XXXX",Password="YYYYY")
+        #excel = win32.DispatchEx('Excel.Application', clsctx=pythoncom.CLSCTX_LOCAL_SERVER)
+        #excel = win32.Dispatch('Excel.Application', clsctx=pythoncom.CLSCTX_LOCAL_SERVER)
+        #excel.Application.Quit()
+        try:
             # now we open that as template
-            excel = win32.gencache.EnsureDispatch('Excel.Application')
+            # excel = win32.gencache.EnsureDispatch('Excel.Application')
+            excel = win32com.client.dynamic.Dispatch("Excel.Application")
+            excel.Visible = False
             excel.DisplayAlerts = False  # disable overwrite warning
             wb = excel.Workbooks.Open(os.path.join(mytmpdir, template_filename))
             sheet = wb.Worksheets("Data")
@@ -1337,7 +1399,7 @@ class Report(models.Model):
             _logger.debug('Excel quit')
             excel.Application.Quit()
         except Exception as e:
-            raise exceptions.ValidationError('Excel test\n\n' + str(e))
+           raise exceptions.ValidationError('Excel test\n\n' + str(e))
 
         context = {}
         context['message'] = "Excel worksheet creation seems to work!\nIn this test generated Excels in " + mytmpdir

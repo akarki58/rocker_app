@@ -2,3 +2,4 @@
 Powerpoint functionality added
 11.2.2020
 Fixed Excel start, remove gen_py folder & data from TEMP
+19.3.2023 Odoo 16 version
