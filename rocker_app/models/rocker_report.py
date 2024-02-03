@@ -84,12 +84,12 @@ class Report(models.Model):
                                       'Report in Collections', domain="[('report_type', '=', 'collection'),('report_application','=', report_application)]")
     column_headings = fields.Char('Column headings', default='Stage; Count', help="Column headings separated with ;")
     select_clause = fields.Text('Select', default=
-    """select ns.name, count(*) 
-    from note_note nn
-    join note_stage_rel nsr on nsr.note_id = nn.id
-    join note_stage ns on ns.id = nsr.stage_id 
-    group by ns.name, ns.sequence
-    order by ns.sequence""")
+    """select ptt.name, count(*)
+    from public.project_task pt
+    join public.project_task_user_rel ptur on ptur.task_id = pt.id
+    join public.project_task_type ptt on ptt.id = ptur.stage_id
+	group by ptt.name
+    order by ptt.name""")
     sheet_name = fields.Char('Excel Sheet Name', default='Data')
     report_template = fields.Binary('Report template', help="")
     report = fields.Binary('Lastest Report')
@@ -225,9 +225,18 @@ class Report(models.Model):
             }
 
     def export_ppt(self, context=None):
-        from pptx import Presentation
-        from pptx.chart.data import CategoryChartData
-        from pptx.enum.chart import XL_CHART_TYPE
+        try:
+            from pptx import Presentation
+            from pptx.chart.data import CategoryChartData
+            from pptx.enum.chart import XL_CHART_TYPE
+        except ModuleNotFoundError as moduleErr:
+            print("[Error]: Failed to import (Module Not Found) {}.".format(moduleErr.args[0]))
+            raise exceptions.ValidationError("[Error]: Failed to import (Module Not Found) {}.".format(moduleErr.args[0]))
+            sys.exit(1)
+        except ImportError as impErr:
+            print("[Error]: Failed to import (Import Error) {}.".format(impErr.args[0]))
+            raise exceptions.ValidationError("[Error]: Failed to import (Import Error) {}.".format(impErr.args[0]))
+            sys.exit(1)
 
         filename = ''
         pp_title = ''
@@ -634,9 +643,15 @@ class Report(models.Model):
         _password = _database_record.password
         _logger.info('Connecting to ' + _database_record.name)
         con = None
-        con = rocker_connection.rocker_connection.create_connection(_database_record)
+        engine = None
+        if _driver == 'sqlalchemy':
+            engine, con = rocker_connection.rocker_connection.create_connection(_database_record)
+        else:
+            con = rocker_connection.rocker_connection.create_connection(_database_record)
+
         if con is not None:
             _logger.info('Database Connect OK')
+            _logger.debug(con)
             return con
         else:
             raise exceptions.ValidationError('Exception, No Database connection')
@@ -663,13 +678,14 @@ class Report(models.Model):
             c = c + 1
 
         # select
-        cur = con.cursor()
         try:
+            # select
+            cur = con.cursor()
             cur.execute(sql)
+            records = cur.fetchall()
         except Exception as e:
             raise exceptions.ValidationError('Error in Select clause!\n\n' + str(e))
 
-        records = cur.fetchall()
         i = len(records)
         # create data table
         _logger.debug('Creating Range rows')
@@ -760,13 +776,14 @@ class Report(models.Model):
 
 
         # select
-        cur = con.cursor()
         try:
+            # select
+            cur = con.cursor()
             cur.execute(sql)
+            records = cur.fetchall()
         except Exception as e:
             raise exceptions.ValidationError('Error in Select clause!\n\n' + str(e))
 
-        records = cur.fetchall()
         # language selection
         list_records = list(records)
         for i in range(len(list_records)):
@@ -1361,7 +1378,8 @@ class Report(models.Model):
         _logger.debug('win32com.client.dynamic.Dispatch("Excel.Application")')
         try:
             excel = win32com.client.dynamic.Dispatch("Excel.Application")
-            #excel = win32com.client.gencache.EnsureDispatch('Excel.Application') # can not run makepy process
+            # xlApp = win32com. win32.Dispatch('Excel.Application', pythoncom.CoInitialize())
+            # excel = win32com.client.gencache.EnsureDispatch('Excel.Application') # can not run makepy process
             excel.Visible = False
             excel.DisplayAlerts = False  # disable overwrite warning
             wb = excel.Workbooks.Add()

@@ -34,12 +34,13 @@ class rocker_database(models.Model):
     _sql_constraints = [('unique_name', 'UNIQUE(name)', 'Datasource Name must be unique')]
     driver = fields.Selection(
         [('mysql', 'MySQL'), ('mariadb', 'MariaDB'), ('oracle', 'Oracle'), ('sqlserver', 'SQLServer'), ('odbc', 'ODBC'),
-         ('postgresql', 'PostrgeSQL')], 'Driver', required=True, default='postgresql')
+         ('postgresql', 'PostrgeSQL'), ('sqlalchemy', 'SQLAlchemy')], 'Driver', required=True, default='postgresql')
+    sqlalchemydriver = fields.Char('SQLAlchemy driver', required=False, default='postgresql+psycopg2')
     odbcdriver = fields.Char('ODBC driver', required=False, default='SQL Server')
     # sid = fields.Char('Oracle SID', required=False)
     host = fields.Char('Host', required=True, default='127.0.0.1')
     port = fields.Char('Port', required=False, default='5432')
-    database = fields.Char('Database or SID ', required=True, default='Rocker')
+    database = fields.Char('Database or SID ', required=True)
     user = fields.Char('User', required=True, default='openpg')
     password = fields.Char('Password', required=True, default='openpgpwd')
 
@@ -47,6 +48,7 @@ class rocker_database(models.Model):
     def testconnection(self):
         _datasource = self.name
         _driver = self.driver
+        _sqlalchemydriver = self.sqlalchemydriver
         _odbcdriver = self.odbcdriver
         _sid = self.database
         _database = self.database
@@ -55,15 +57,29 @@ class rocker_database(models.Model):
         _user = self.user
         _password = self.password
         con = None
+        engine = None
         _logger.info('Testing connection to ' + self.name)
 
         context = {}
         title = ''
-        con = rocker_connection.rocker_connection.create_connection(self)
+        if _driver == 'sqlalchemy':
+            engine, con = rocker_connection.rocker_connection.create_connection(self)
+        else:
+            con = rocker_connection.rocker_connection.create_connection(self)
+        _logger.debug('Test Connection: ')
+        _logger.debug(con)
+        _logger.debug('Test Engine: ')
+        _logger.debug(engine)
+
         if con:
-            context['message'] = "Connection succesful"
+            context['message'] = "Connection successful"
             title = 'Success'
-            con.close()
+            if _driver == 'sqlalchemy':
+                con.invalidate()
+                con.close()
+                engine.dispose()
+            else:
+                con.close()
         else:
             context['message'] = "Connection failed"
             title = 'Error'

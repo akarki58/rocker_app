@@ -12,9 +12,10 @@
                         <field name="name"/>
                         <field name="driver"/>
                         <field name="host"/>
-                        <field name="port" attrs="{'invisible':[('driver', 'in',('sqlserver','odbc'))]}"/>
-                        <field name="odbcdriver" placeholder="example: SQL Server" attrs="{'invisible':[('driver', 'not in',('sqlserver','odbc'))]}"/>
-                        <field name="database"/>
+                        <field name="port" invisible="driver, 'in',['sqlserver','odbc']"/>
+                        <field name="sqlalchemydriver" placeholder="example: postgresql+psycopg2" invisible="driver, 'not in',['sqlalchemy']"/>
+                        <field name="odbcdriver" placeholder="example: SQL Server" invisible="driver, 'not in', ['sqlserver','odbc']"/>
+                        <field name="database" placeholder="Database is case sensitive. e.g. odoo" />
                         <field name="user"/>
                         <field name="password"  password="True"/>
                     </group>

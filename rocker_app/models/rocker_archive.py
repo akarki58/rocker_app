@@ -17,6 +17,7 @@
 #    If not, see <http://www.gnu.org/licenses/>.
 #
 #############################################################################
+# ver 17
 
 from odoo import api, fields, models
 from odoo import exceptions
