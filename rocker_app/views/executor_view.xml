@@ -17,7 +17,7 @@
                 <group col="2">
                     <field name="priority"/>
                     <field name="name"/>
-                    <field name="nextcall" string="Next Execution [UTC]"/>
+                    <field name="nextcall" string="Next Execution"/>
                     <field name="interval_number"/>
                     <field name="interval_type"/>
                     <field name="numbercall"/>
