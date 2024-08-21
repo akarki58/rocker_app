@@ -3,7 +3,9 @@
  'description': 'Get data from Odoo & external PostgreSQL, SQLServer, MySQL, MariaDB, ODBC or Oracle databases.',
  'author': 'Antti Kärki',
  'depends': ['base', 'web', 'mail'],
- 'license': 'AGPL-3',
+ 'license': 'OPL-1',
+ 'price': 10.00,
+ 'currency': 'EUR',
  'category': 'Rocker/Reporting',
  'version': '17.0.1.1',
  'data': [
