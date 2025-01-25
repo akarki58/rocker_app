@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- 2025-01-25 -->
 <odoo>
     <record id="rocker_executor_view_form" model="ir.ui.view">
         <field name="name">rocker.executor.view.form</field>
@@ -20,26 +21,26 @@
                     <field name="nextcall" string="Next Execution"/>
                     <field name="interval_number"/>
                     <field name="interval_type"/>
-                    <field name="numbercall"/>
+<!--                    <field name="numbercall"/>-->
                     <field name="user_id" invisible="1"/>
                 </group>
             </form>
         </field>
     </record>
 
-    <record id="rocker_executor_view_tree" model="ir.ui.view">
+    <record id="rocker_executor_view_list" model="ir.ui.view">
         <field name="model">ir.cron</field>
         <field name="arch" type="xml">
-            <tree string="Scheduled Actions" decoration-muted="(not active)">
+            <list string="Scheduled Actions" decoration-muted="(not active)">
                 <field name="priority"/>
                 <field name="name"/>
                 <field name="nextcall"/>
                 <field name="interval_number"/>
                 <field name="interval_type"/>
-                <field name="numbercall"/>
+<!--                <field name="numbercall"/>-->
                 <field name="user_id" invisible="1"/>
                 <field name="active"/>
-            </tree>
+            </list>
         </field>
     </record>
     <record id="rocker_executor_view_search" model="ir.ui.view">

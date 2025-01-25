@@ -12,9 +12,8 @@
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #    GNU AFFERO GENERAL PUBLIC LICENSE (AGPL v3) for more details.
 #
-#    You should have received a copy of the GNU AFFERO GENERAL PUBLIC LICENSE
-#    (AGPL v3) along with this program.
-#    If not, see <http://www.gnu.org/licenses/>.
+#
+# 2025-01-25
 #
 #############################################################################
 
@@ -82,14 +81,11 @@ class Report(models.Model):
     sequence = fields.Integer(string='Sequence', default=10)
     collection_ids = fields.Many2many('rocker.report', 'rocker_report_collection', 'report_id', 'collection_id',
                                       'Report in Collections', domain="[('report_type', '=', 'collection'),('report_application','=', report_application)]")
-    column_headings = fields.Char('Column headings', default='Stage; Count', help="Column headings separated with ;")
+    column_headings = fields.Char('Column headings', default='Report_type; Count', help="Column headings separated with ;")
     select_clause = fields.Text('Select', default=
-    """select ptt.name, count(*)
-    from public.project_task pt
-    join public.project_task_user_rel ptur on ptur.task_id = pt.id
-    join public.project_task_type ptt on ptt.id = ptur.stage_id
-	group by ptt.name
-    order by ptt.name""")
+    """select initcap(rr.report_application), count(*)
+    from public.rocker_report rr
+    group by rr.report_application""")
     sheet_name = fields.Char('Excel Sheet Name', default='Data')
     report_template = fields.Binary('Report template', help="")
     report = fields.Binary('Lastest Report')
@@ -225,6 +221,7 @@ class Report(models.Model):
             }
 
     def export_ppt(self, context=None):
+        _logger.debug('export_ppt start')
         try:
             from pptx import Presentation
             from pptx.chart.data import CategoryChartData
@@ -283,6 +280,7 @@ class Report(models.Model):
                 raise exceptions.ValidationError('Temp file in use, quit all Powewrpoints from task manager')
 
             # open powerpoint(template) from TEMP
+            from pptx import Presentation
             prs = Presentation(filename)
             _logger.debug('Using template')
         else:
@@ -290,6 +288,7 @@ class Report(models.Model):
             filename = self.file_name
             filename = os.path.join(mytmpdir, filename)
             _logger.debug('Using empty Powerpoint: ' + filename)
+            from pptx import Presentation
             prs = Presentation()
 
         if self.report_type == 'single':
@@ -498,7 +497,7 @@ class Report(models.Model):
             for report in self.report_ids:
                 sheetname = report.sheet_name.strip()
                 if not sheetname:
-                    raise exceptions.ValidationError('In Collections sheet names are manadatory')
+                    raise exceptions.ValidationError('In Collections sheet names are mandatory')
                 worksheet = self._worksheet(workbook, sheetname)
                 _logger.debug('Collection report, using sheet: ' + report.sheet_name)
                 con = self._create_connection(report.database)
@@ -810,7 +809,7 @@ class Report(models.Model):
 
             if self.element == 'table':
                 if len(row) != len(header):
-                    raise exceptions.ValidationError('Count of headers is not the same as count of data columns\Separate headers with ;\nOr check your SQL')
+                    raise exceptions.ValidationError('Count of headers is not the same as count of data columns\nSeparate headers with ;\nOr check your SQL')
                 if (r >= rows_per_table):
                     # create slide , first slide created already in export_ppt
                     if (element_written == 1):
@@ -1349,14 +1348,16 @@ class Report(models.Model):
 
     @api.model
     def _execute_xls(self, context=None):
-        report_id = dict(self._context.get('params', {})).get('id')
-        self = self.env['rocker.report'].search([('id', '=', report_id)])
-        self.export_report()
+        # report_id = dict(self._context.get('params', {})).get('id')
+        # 2025
+        report_id = dict(self._context.get('params', {})).get('resId')
+        report = self.env['rocker.report'].search([('id', '=', report_id)])
+        report.export_report()
         _logger.debug('Base url: ' + self.env['ir.config_parameter'].sudo().get_param('web.base.url'))
         return {
             'type': 'ir.actions.act_url',
             'name': 'report',
-            'url': '/web/content/rocker.report/%s/report/%s?download=true' % (self.id, self.file_name)
+            'url': '/web/content/rocker.report/%s/report/%s?download=true' % (report.id, report.file_name)
         }
 
     @api.model

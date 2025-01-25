@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- 2025-01-25 -->
 <odoo>
 
     <record id="action_rocker_report" model="ir.actions.act_window">
         <field name="name">Rocker Reports</field>
         <field name="res_model">rocker.report</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="context">{'search_default_type_group':1}</field>
     </record>
 
@@ -12,14 +13,14 @@
     <record id="action_rocker_archive" model="ir.actions.act_window">
         <field name="name">Rocker Archive</field>
         <field name="res_model">rocker.archive</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
 
     <record id="action_rocker_database" model="ir.actions.act_window">
         <field name="name">Rocker Databases</field>
         <field name="res_model">rocker.database</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
     <record id="rocker_executor_act" model="ir.actions.act_window">

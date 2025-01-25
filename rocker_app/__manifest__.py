@@ -7,7 +7,7 @@
  'price': 10.00,
  'currency': 'EUR',
  'category': 'Rocker/Reporting',
- 'version': '17.0.1.1',
+ 'version': '18.0.1.0',
  'data': [
      'security/rocker_security.xml',
      'security/ir.model.access.csv',
