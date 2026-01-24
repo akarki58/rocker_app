@@ -9,12 +9,21 @@
 <body>
 <div class="container">
     <h1>Rocker Reporting Application</h1>
-    <h2>for Odoo 17 / Odoo16 / Odoo 15 / Odoo 12.0 / Odoo 13.0 / Odoo 14.0</h2>
+    <h2>for Odoo19 / Odoo 18 / Odoo 17 / Odoo16 / Odoo 15 / Odoo 12.0 / Odoo 13.0 / Odoo 14.0</h2>
     Collect data to single Excel from various data sources, Use Excel templates to present business graphs. Combine data
-    with Excel Power Pivot. Get data from Odoo & external PostgreSQL, SQLAlchemy, SQLServer, MySQL, MariaDB, ODBC or Oracle databases.
+    with Excel Power Pivot. Get data from Odoo & external PostgreSQL, SQLAlchemy, SQLServer, MySQL, MariaDB, ODBC or
+    Oracle databases.
     <p>
     <h2>News/Notes:</h2>
     <ul>
+        <li><b>26-1-2026</b>
+            <br>
+            Version for Odoo 19<br>Emailing routines fixed & improved
+        </li>
+        <li><b>23-1-2025</b>
+            <br>
+            Version for Odoo 18
+        </li>
         <li><b>3.2.2024</b>
             <p>Rocker Reporting for Odoo 17</p>
             <p>SQLAlchemy drivers supported</p>
@@ -28,9 +37,12 @@
         </li>
         <li><b>15.2.2021</b>
             <p>At the moment we have a problem starting Excel if Odoo runs as a service.<br>
-                Everything works well if you start Odoo from command prompt. See install guide in docs folder.<p>
+                Everything works well if you start Odoo from command prompt. See install guide in docs folder.
+            <p>
                 If someone knows the solution to: excel = win32.gencache.EnsureDispatch('Excel.Application') causing
-                (-2147023584, 'A specified logon session does not exist. It may already have been terminated.', None, None) error, pls email.<p>
+                (-2147023584, 'A specified logon session does not exist. It may already have been terminated.', None,
+                None) error, pls email.
+            <p>
                 Openpyxl version <a href="https://apps.odoo.com/apps/modules/14.0/rocker_app/">https://apps.odoo.com/apps/modules/14.0/rocker_app/</a>
                 does not have a problem but this one supports all Excel 2016 features including Power Pivot</p>
             <p>Author contact: antti.rocker.karki@outlook.com</p>
@@ -41,42 +53,43 @@
     <ol>
         <li>Odoo 12, 13, 14,15, 16, 17 installed on Windows platform</li>
         <li>Excel 32 bit installed on server</li>
-        <li>Datasource drivers (PostgreSQL, SQLAlchemy, SQLServer, Oracle, MySQL, MariaDB etc.) installed on server based on your
+        <li>Datasource drivers (PostgreSQL, SQLAlchemy, SQLServer, Oracle, MySQL, MariaDB etc.) installed on server
+            based on your
             needs
         </li>
     </ol>
     <h2>Examples:</h2>
-        <ol>
-            <li>
-                <strong>Powerpoints: Powerpoint table slide</strong><br><br>
-                <img class="img-fluid" src="Table.png" />
-            </li>
-            <br>
-            <li>
-                <strong>Powerpoints: Powerpoint Column Chart slide</strong><br><br>
-                <img class="img-fluid" src="ColumnChart.png" />
-            </li>
-            <br>
-            <li>
-                <strong>Powerpoints: Powerpoint Pie Chart slide</strong><br><br>
-                <img class="img-fluid" src="Pie.png" />
-            </li>
-            <br>
-            <li>
-                <strong>Powerpoints: Powerpoint Collection</strong><br><br>
-                <img class="img-fluid" src="Collection.png" />
-            </li>
-            <br>
-            <li>
-                <strong>Rocker Excel example: Data from single datasource</strong><br><br>
-                <img class="img-fluid" src="RockerUI.png" />
-            </li>
-            <br>
-            <li>
-                <strong>Rocker Excel example: Collection reports, data from many datasources</strong><br><br>
-                <img class="img-fluid" src="RockerUI2.png" />
-            </li>
-        </ol>
+    <ol>
+        <li>
+            <strong>Powerpoints: Powerpoint table slide</strong><br><br>
+            <img class="img-fluid" src="Table.png"/>
+        </li>
+        <br>
+        <li>
+            <strong>Powerpoints: Powerpoint Column Chart slide</strong><br><br>
+            <img class="img-fluid" src="ColumnChart.png"/>
+        </li>
+        <br>
+        <li>
+            <strong>Powerpoints: Powerpoint Pie Chart slide</strong><br><br>
+            <img class="img-fluid" src="Pie.png"/>
+        </li>
+        <br>
+        <li>
+            <strong>Powerpoints: Powerpoint Collection</strong><br><br>
+            <img class="img-fluid" src="Collection.png"/>
+        </li>
+        <br>
+        <li>
+            <strong>Rocker Excel example: Data from single datasource</strong><br><br>
+            <img class="img-fluid" src="RockerUI.png"/>
+        </li>
+        <br>
+        <li>
+            <strong>Rocker Excel example: Collection reports, data from many datasources</strong><br><br>
+            <img class="img-fluid" src="RockerUI2.png"/>
+        </li>
+    </ol>
     <h2>Guides:</h2>
     <ol>
         <li>
@@ -102,14 +115,16 @@
         </li>
         <br>
         <li>
-            <strong><a href="https://www.youtube.com/watch?v=4rycsBdr9B4">Get data from SQLServer demo</a></strong><br><br>
+            <strong><a href="https://www.youtube.com/watch?v=4rycsBdr9B4">Get data from SQLServer
+                demo</a></strong><br><br>
             <iframe width="806" height="453" src="https://www.youtube.com/embed/4rycsBdr9B4" frameborder="0"
                     allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
                     allowfullscreen></iframe>
         </li>
         <br>
         <li>
-            <strong><a href="https://www.youtube.com/watch?v=1fDRUVlbJog">Collection Reports demo, get data from many data sources</a></strong><br><br>
+            <strong><a href="https://www.youtube.com/watch?v=1fDRUVlbJog">Collection Reports demo, get data from many
+                data sources</a></strong><br><br>
             <iframe width="806" height="453" src="https://www.youtube.com/embed/1fDRUVlbJog" frameborder="0"
                     allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
                     allowfullscreen></iframe>

@@ -1,5 +1,8 @@
 Rocker Reporting for Windows Odoo
 ---------------
+"c:\Odoo 19.0\python\python" pip3.exe install python-pptx
+"c:\Odoo 19.0\python\python" pip3.exe install sqlalchemy
+
 
 Datasource settings:
 host: localhost
@@ -20,6 +23,7 @@ pip install SQLAlchemy
 READ ROCKER_INSTALL.PPTX !!!
 Slides: Test Excel functionality & Excel error 1: Change Odoo service properties
 how to get Excel working
+
 
 pip import python-pptx
 NOTE: Mine went to C:\USERS\ANTTI\APPDATA\ROAMING\PYTHON\SITE-PACKAGES
